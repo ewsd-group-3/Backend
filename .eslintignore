@@ -1,0 +1,4 @@
+src/seeders/*.js
+src/migrations/*.js
+src/models/index.ts
+src/config/*.js
