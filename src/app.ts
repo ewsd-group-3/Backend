@@ -52,11 +52,6 @@ if (config.env === 'production') {
   app.use('/v1/auth', authLimiter);
 }
 
-// Home Page
-app.get('/', (req, res) => {
-  res.send('Backend API activated!');
-});
-
 // v1 api routes
 app.use('/v1', routes);
 
