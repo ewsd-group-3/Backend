@@ -15,7 +15,7 @@ import { errorConverter, errorHandler } from './middleWares/error';
 
 import ApiError from './utils/ApiError';
 
-import routes from './v1';
+import routes from './v1/routes';
 
 const app = express();
 
