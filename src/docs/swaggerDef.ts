@@ -5,7 +5,7 @@ const swaggerDef = {
   openapi: '3.0.0',
   info: {
     title: `${name} API documentation`,
-    version,
+    version: '1.0.0',
     license: {
       name: 'MIT',
       url: repository
@@ -15,7 +15,12 @@ const swaggerDef = {
     {
       url: `http://localhost:${config.port}/v1`
     }
-  ]
+  ],
+  paths: {
+    path: {
+      '/auth/login': [Object]
+    }
+  }
 };
 
 export default swaggerDef;
