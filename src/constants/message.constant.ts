@@ -52,7 +52,8 @@ const AppMessage = {
     'Invalid phone no or phone number',
     'သင်၏ အမည် (သို့) ဖုန်းနံပါတ် မှားနေပါသည်'
   ],
-  validCredentials: ['Successfully login', 'အကောင့်ဝင်ရောက်မှု့ အောင်မြင်သည်'],
+  loggedIn: ['Successfully Logged In!', 'အကောင့်ဝင်ရောက်မှု့ အောင်မြင်သည်'],
+  loggedOut: ['Successfully Logged Out!', 'အကောင့်ထွက်ရောက်မှု့ အောင်မြင်သည်'],
 
   /** --------------------------- For Admin -------------------------- */
 
@@ -62,7 +63,7 @@ const AppMessage = {
     'User information has been updated',
     'စီမံခန့်ခွဲသူအချက်အလက်များကို ပြင်ဆင်ပြီးပါပြီ'
   ],
-  userDelete: ['Admin deleted', 'စီမံခန့်ခွဲသူအကောင့်ဖျက်သိမ်းခြင်းလုပ်ဆောင်ချက် ပြီးပါပြီ'],
+  userDelete: ['User deleted', 'စီမံခန့်ခွဲသူအကောင့်ဖျက်သိမ်းခြင်းလုပ်ဆောင်ချက် ပြီးပါပြီ'],
 
   //Status
   statusOn: ['Status on', 'ဖွင့်ထားသည်'],

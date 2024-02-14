@@ -12,7 +12,7 @@ import { encryptPassword } from '../../utils/encryption';
 const createStaff = async (
   email: string,
   password: string,
-  name?: string,
+  name: string,
   role: Role = Role.STAFF
 ): Promise<Staff> => {
   if (await getStaffByEmail(email)) {
