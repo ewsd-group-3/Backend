@@ -36,6 +36,8 @@ model Token {
 enum Role {
   STAFF
   ADMIN
+  QA_MANGER
+  QA_COORDINATOR
 }
 
 enum TokenType {

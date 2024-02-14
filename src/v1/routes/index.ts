@@ -12,7 +12,7 @@ const defaultRoutes = [
     route: authRoute
   },
   {
-    path: '/staff',
+    path: '/staffs',
     route: staffRoute
   }
 ];
