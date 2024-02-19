@@ -1,8 +1,8 @@
 import { Role } from '@prisma/client';
 import Joi from 'joi';
-import { password } from './custom.validation';
+import { password } from '../auth/custom.validation';
 
-const createStaff = {
+const createDepartment = {
   body: Joi.object().keys({
     email: Joi.string().required().email(),
     password: Joi.string().required().custom(password),
@@ -11,7 +11,7 @@ const createStaff = {
   })
 };
 
-const getStaffs = {
+const getDepartments = {
   query: Joi.object().keys({
     name: Joi.string(),
     role: Joi.string(),
@@ -21,15 +21,15 @@ const getStaffs = {
   })
 };
 
-const getStaff = {
+const getDepartment = {
   params: Joi.object().keys({
-    staffId: Joi.number().integer()
+    departmentId: Joi.number().integer()
   })
 };
 
-const updateStaff = {
+const updateDepartment = {
   params: Joi.object().keys({
-    staffId: Joi.number().integer()
+    departmentId: Joi.number().integer()
   }),
   body: Joi.object()
     .keys({
@@ -40,16 +40,16 @@ const updateStaff = {
     .min(1)
 };
 
-const deleteStaff = {
+const deleteDepartment = {
   params: Joi.object().keys({
-    staffId: Joi.number().integer()
+    departmentId: Joi.number().integer()
   })
 };
 
 export default {
-  createStaff,
-  getStaffs,
-  getStaff,
-  updateStaff,
-  deleteStaff
+  createDepartment,
+  getDepartments,
+  getDepartment,
+  updateDepartment,
+  deleteDepartment
 };

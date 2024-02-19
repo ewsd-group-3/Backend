@@ -1,8 +1,8 @@
 import express from 'express';
 import auth from '../../middleWares/auth';
 import validate from '../../middleWares/validate';
-import { staffValidation } from '../validations';
-import { staffController } from '../controllers';
+import staffValidation from './staff.validation';
+import staffController from './staff.controller';
 
 const router = express.Router();
 
@@ -12,10 +12,18 @@ router
   .get(auth('getStaffs'), validate(staffValidation.getStaffs), staffController.getStaffs);
 
 router
+  .route('/change-password')
+  .patch(auth(), validate(staffValidation.changePassword), staffController.changePassword);
+
+router
   .route('/:staffId')
   .get(auth('getStaffs'), validate(staffValidation.getStaff), staffController.getStaff)
-  .patch(auth('manageStaffs'), validate(staffValidation.updateStaff), staffController.updateStaff)
-  .delete(auth('manageStaffs'), validate(staffValidation.deleteStaff), staffController.deleteStaff);
+  .patch(auth('manageStaffs'), validate(staffValidation.updateStaff), staffController.updateStaff);
+// .delete(auth('manageStaffs'), validate(staffValidation.deleteStaff), staffController.deleteStaff);
+
+router.route('/toggle-active/:staffId').patch(auth('manageStaffs'), staffController.toggleActive);
+
+router.route('/reset-password/:staffId').patch(auth('manageStaffs'), staffController.resetPassword);
 
 export default router;
 
