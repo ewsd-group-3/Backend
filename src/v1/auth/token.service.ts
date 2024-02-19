@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import moment, { Moment } from 'moment';
 import httpStatus from 'http-status';
 import config from '../../config/config';
-import staffService from './staff.service';
+import staffService from '../staff/staff.service';
 import ApiError from '../../utils/ApiError';
 import { Token, TokenType } from '@prisma/client';
 import prisma from '../../prisma';

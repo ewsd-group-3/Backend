@@ -11,32 +11,164 @@ datasource db {
 }
 
 model Staff {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
-  password String
-  role  Role    @default(STAFF)
-  isEmailVerified Boolean  @default(false)
-  Token      Token[]
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
+  id                Int                 @id @default(autoincrement())
+  email             String              @unique
+  name              String
+  password          String
+  role              Role                @default(STAFF)
+  isActive          Boolean             @default(true)
+  department        Department          @relation(fields: [departmentId], references: [id])
+  departmentId      Int
+  ideas             Idea[]
+  views             View[]
+  comments          Comment[]
+  votes             Vote[]
+  tokens            Token[]
+  announcements     Announcement[]
+  staffAnnouncement StaffAnnouncement[]
+  lastLoginDate     DateTime?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @default(now())@updatedAt
 }
 
 model Token {
-  id          Int       @id @default(autoincrement())
+  id          Int         @id @default(autoincrement())
   token       String
   type        TokenType
   expires     DateTime
   blacklisted Boolean
+  staff       Staff       @relation(fields: [staffId], references: [id])
+  staffId     Int
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @default(now())@updatedAt
+}
+
+model Department {
+  id          Int         @id @default(autoincrement())
+  name        String      @unique
+  staff       Staff[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @default(now())@updatedAt
+}
+
+model Category {
+  id              Int             @id @default(autoincrement())
+  name            String
+  ideaCategories  IdeaCategory[]
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @default(now())@updatedAt
+}
+
+model Idea {
+  id              Int             @id @default(autoincrement())
+  name            String
+  staff           Staff           @relation(fields: [staffId], references: [id])
+  staffId         Int
+  semester        Semester        @relation(fields: [semesterId], references: [id])
+  semesterId      Int
+  comments        Comment[]
+  votes           Vote[]
+  views           View[]
+  ideaDocuments   IdeaDocument[]
+  ideaCategories  IdeaCategory[]
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @default(now())@updatedAt
+}
+
+model IdeaCategory {
+  id          Int       @id @default(autoincrement())
+  idea        Idea      @relation(fields: [ideaId], references: [id])
+  ideaId      Int
+  category    Category  @relation(fields: [categoryId], references: [id])
+  categoryId  Int
   createdAt   DateTime  @default(now())
-  staff       Staff      @relation(fields: [staffId], references: [id])
-  staffId      Int
+  updatedAt   DateTime  @default(now())@updatedAt
+}
+
+model IdeaDocument {
+  id          Int         @id @default(autoincrement())
+  name        String
+  idea        Idea        @relation(fields: [ideaId], references: [id])
+  ideaId      Int
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @default(now())@updatedAt
+}
+
+model Vote {
+  id          Int         @id @default(autoincrement())
+  staff       Staff       @relation(fields: [staffId], references: [id])
+  staffId     Int
+  idea        Idea        @relation(fields: [ideaId], references: [id])
+  ideaId      Int
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @default(now())@updatedAt
+}
+
+model Comment {
+  id          Int         @id @default(autoincrement())
+  name        String
+  staff       Staff       @relation(fields: [staffId], references: [id])
+  staffId     Int
+  idea        Idea        @relation(fields: [ideaId], references: [id])
+  ideaId      Int
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @default(now())@updatedAt
+}
+
+model View {
+  id          Int         @id @default(autoincrement())
+  staff       Staff       @relation(fields: [staffId], references: [id])
+  staffId     Int
+  idea        Idea        @relation(fields: [ideaId], references: [id])
+  ideaId      Int
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @default(now())@updatedAt
+}
+
+model AcademicInfo {
+  id          Int         @id @default(autoincrement())
+  name        String
+  semesters   Semester[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @default(now())@updatedAt
+}
+
+model Semester {
+  id              Int           @id @default(autoincrement())
+  name            String
+  academicInfo    AcademicInfo  @relation(fields: [academicInfoId], references: [id])
+  academicInfoId  Int
+  ideas           Idea[]
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @default(now())@updatedAt
+}
+
+model Announcement {
+  id          Int                 @id @default(autoincrement())
+  name        String
+  content     String
+  type        AudienceType
+  announcer   Staff               @relation(fields: [announcerId], references: [id])
+  announcerId Int
+  audiences   StaffAnnouncement[]
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @default(now()) @updatedAt
+}
+
+model StaffAnnouncement {
+  id              Int           @id @default(autoincrement())
+  staff           Staff         @relation(fields: [staffId], references: [id])
+  staffId         Int
+  announcement    Announcement  @relation(fields: [announcementId], references: [id])
+  announcementId  Int
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @default(now()) @updatedAt
 }
 
 enum Role {
   STAFF
   ADMIN
-  QA_MANGER
+  QA_MANAGER
   QA_COORDINATOR
 }
 
@@ -45,4 +177,9 @@ enum TokenType {
   REFRESH
   RESET_PASSWORD
   VERIFY_EMAIL
+}
+
+enum AudienceType {
+  ALL
+  SPECIFIC
 }

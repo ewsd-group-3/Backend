@@ -18,56 +18,41 @@ export const fileNotFound = (() => {
   return [`File not found`, 'ဖိုင်မတွေ့ပါ', ''];
 })();
 
+export const defaultPassword = '123456';
+
 const AppMessage = {
   /** < -------------------- For Customer ----------------------------------- > */
 
-  //Banker
-  adminBankerCreated: [
-    'Successfuly Admin Account Registration to Banker',
-    'စီမံခန့်ခွဲသူမှ သင့်၏အကောင့်အား အောင်မြင်စွာ စာရင်းသွင်းပြီးပါပြီ'
-  ],
-  adminBankerNotFound: ['Banker Account not Found', 'သင့်၏အကောင့်ကို မတွေ့ရှိပါ'],
-  adminBankerUpdate: [
-    'Admin information has been updated to Banker',
-    'စီမံခန့်ခွဲသူမှ သင်၏အချက်အလက်များ အောင်မြင်စွာပြင်ဆင်ပြီးပါပြီ'
-  ],
-  AdminDeleteCustomer: [
-    'Admin deleted to Customer Account ',
-    'စီမံခန့်ခွဲသူမှ သင့်၏အကောင့်အား ဖျက်သိမ်းခဲ့ပါသည်။'
-  ],
-  adminBankerAlreadyExists: ['Banker Account already exists', 'ဤအကောင့်သည် ရှိနေပြီးသားဖြစ်ပါသည်။'],
+  // staff
+  staffCreated: 'Staff Account is Created',
+  staffUpdated: 'Staff information has been updated',
+  staffDeleted: 'Staff Account is deleted',
 
-  //OTP
-  sendOTP: ['Send OTP your phone', 'သင်၏  ဖုန်းနံပါတ်ကို OTP ကုဒ် ပို့ထားပါသည်'],
-  verifyOTP: ['Verify OTP is successful ', 'OTP စစ်ဆေးချက် အောင်မြင်ပါသည်'],
-  notFoundOTP: ['OTP not Found', 'OTP ကုဒ် မတွေ့ရှိပါ'],
-  forgetPassword: [
-    'Forget password is successful',
-    ' လျှို့ဝှက်ကုဒ် ပြန်လည်တောင်းဆိုမှု အောင်မြင်သည်'
-  ],
+  // department
+  departmentCreated: 'Department is Created',
+  departmentUpdated: 'Department information has been updated',
+  departmentDeleted: 'Department is deleted',
 
-  //Login
-  invalidCredentials: ['Invalid username or password', ' အမည် (သို့) လျှို့ဝှက်ကုဒ် မှားနေပါသည်'],
-  invalidCredentialsWithPhone: [
-    'Invalid phone no or phone number',
-    'သင်၏ အမည် (သို့) ဖုန်းနံပါတ် မှားနေပါသည်'
-  ],
-  loggedIn: ['Successfully Logged In!', 'အကောင့်ဝင်ရောက်မှု့ အောင်မြင်သည်'],
-  loggedOut: ['Successfully Logged Out!', 'အကောင့်ထွက်ရောက်မှု့ အောင်မြင်သည်'],
+  // OTP
+  sendOTP: 'Send OTP your phone',
+  verifyOTP: 'Verify OTP is successful',
+  notFoundOTP: 'OTP is not Found',
+  forgetPassword: 'Forget password is successful',
+
+  // Login
+  invalidCredentials: 'Invalid username or password',
+  invalidCredentialsWithPhone: 'Invalid phone no or phone number',
+  loggedIn: 'Successfully Logged In!',
+  loggedOut: 'Successfully Logged Out!',
+
+  // Get
+  retrievedSuccessful: 'Retrieved successful',
 
   /** --------------------------- For Admin -------------------------- */
 
-  //admin
-  userCreated: ['User Account Created', 'စီမံခန့်ခွဲသူအကောင့် အောင်မြင်စွာ ဖွင့်ပြီးပါပြီ'],
-  userUpdate: [
-    'User information has been updated',
-    'စီမံခန့်ခွဲသူအချက်အလက်များကို ပြင်ဆင်ပြီးပါပြီ'
-  ],
-  userDelete: ['User deleted', 'စီမံခန့်ခွဲသူအကောင့်ဖျက်သိမ်းခြင်းလုပ်ဆောင်ချက် ပြီးပါပြီ'],
-
   //Status
-  statusOn: ['Status on', 'ဖွင့်ထားသည်'],
-  statusOff: ['Status off', 'ပိတ်ထားသည်'],
+  statusOn: 'Staff status is on!',
+  statusOff: 'Staff status is off!',
 
   unauthorized: ['Unauthorized', 'ဤလုပ်ဆောင်ချက်အား လုပ်ဆောင်ခွင့်မရှိပါ။'],
   contactToAdmin: ['Contact to admin!', 'စီမံခန့်ခွဲသူကို ဆက်သွယ်ပါ'],
@@ -75,7 +60,7 @@ const AppMessage = {
   alreadyExists: ['Already exists', 'ဤလုပ်ဆောင်ချက်သည် ရှိနေပြီးသားဖြစ်သည်။'],
   badRequest: ['Bad Request', 'ပို့ဆောင်ချက် မှားယွင်းနေပါသည်။'],
   forbiddenAction: ['Forbidden action', 'ဤအရာသည် တားမြစ်ထားပါသည်။'],
-  retrievedSuccessful: ['Retrieved successful', 'လုပ်ဆောင်ချက် အောင်မြင်သည်။'],
+
   invalidValue: ['Invalid values', 'မမှန်ကန်သော အချက်အလက်များဖြစ်နေပါသည်။'],
   updated: ['Updated', 'အချက်အလက်များ ပြင်ဆင်ပြီးပါပြီ'],
   created: ['Created', 'အောင်မြင်စွာ စာရင်းသွင်းနိုင်ခဲ့သည်'],
@@ -102,19 +87,9 @@ const AppMessage = {
   incorrectEmail: [`Phone number is incorrect`, `အီးလ်မေး မှားယွင်းနေပါသည်`],
   incorrectUsername: [`Username is incorrect`, `အမည် မှားယွင်းနေပါသည်`],
   match: [`Match`, `ပါဝင်သည်`],
-  doesnotmatch: [`Doesn't match`, `အချက်အလက်များ မကိုက်ညီပါ`],
+  doesnotmatch: [`Doesn't match`, `အချက်အလက်များ မကိုက်ညီပါ`]
 
   /** --------------------------- -------------------------- */
-
-  customerNotFound: ['Customer Account not Found', 'သင့်၏ အကောင့်ကို မတွေ့ရှိပါ'],
-
-  customerUpdate: [
-    'Customer information has been updated',
-    'သင်၏အချက်အလက်များ အောင်မြင်စွာပြင်ဆင်ပြီးပါပြီ'
-  ],
-
-  customerDelete: ['Customer Account deleted', 'သင့် အကောင့်အား ဖျက်သိမ်းခဲ့ပါသည်။'],
-  customerAlreadyExists: ['Customer Account already exists', 'ဤအကောင့်သည် ရှိနေပြီးသားဖြစ်ပါသည်။']
 };
 
 export default AppMessage;

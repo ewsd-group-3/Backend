@@ -1,11 +1,13 @@
 import httpStatus from 'http-status';
-import tokenService from './token.service';
-import staffService from './staff.service';
-import ApiError from '../../utils/ApiError';
-import { TokenType, Staff } from '@prisma/client';
 import prisma from '../../prisma';
-import { encryptPassword, isPasswordMatch } from '../../utils/encryption';
+import { TokenType, Staff } from '@prisma/client';
+
 import { AuthTokensResponse } from '../../types/response';
+import staffService from '../staff/staff.service';
+import tokenService from './token.service';
+
+import ApiError from '../../utils/ApiError';
+import { encryptPassword, isPasswordMatch } from '../../utils/encryption';
 import exclude from '../../utils/exclude';
 
 /**
@@ -24,14 +26,23 @@ const loginStaffWithEmailAndPassword = async (
     'name',
     'password',
     'role',
-    'isEmailVerified',
+    'isActive',
+    'departmentId',
+    'lastLoginDate',
     'createdAt',
     'updatedAt'
   ]);
   if (!staff || !(await isPasswordMatch(password, staff.password as string))) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect email or password');
   }
-  return exclude(staff, ['password']);
+  if (!staff.isActive) {
+    throw new ApiError(httpStatus.FORBIDDEN, 'Account has been disabled!');
+  }
+  const updatedStaff = await prisma.staff.update({
+    where: { id: staff.id },
+    data: { lastLoginDate: new Date() }
+  });
+  return exclude(updatedStaff, ['password']);
 };
 
 /**
@@ -81,6 +92,7 @@ const resetPassword = async (resetPasswordToken: string, newPassword: string): P
       resetPasswordToken,
       TokenType.RESET_PASSWORD
     );
+
     const staff = await staffService.getStaffById(resetPasswordTokenData.staffId);
     if (!staff) {
       throw new Error();
@@ -107,7 +119,7 @@ const verifyEmail = async (verifyEmailToken: string): Promise<void> => {
     await prisma.token.deleteMany({
       where: { staffId: verifyEmailTokenData.staffId, type: TokenType.VERIFY_EMAIL }
     });
-    await staffService.updateStaffById(verifyEmailTokenData.staffId, { isEmailVerified: true });
+    // await staffService.updateStaffById(verifyEmailTokenData.staffId, { isEmailVerified: true });
   } catch (error) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Email verification failed');
   }

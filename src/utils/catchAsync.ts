@@ -1,9 +1,14 @@
 import { RequestHandler } from 'express';
 import { Request, Response, NextFunction } from 'express-serve-static-core';
-import APIError from './ApiError';
 
 export interface CustomParamsDictionary {
   [key: string]: any;
+}
+
+declare module 'express-serve-static-core' {
+  interface Request {
+    staff: { id: number; name: string; email: string; role: string };
+  }
 }
 
 const catchAsync =
