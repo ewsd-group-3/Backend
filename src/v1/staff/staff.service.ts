@@ -19,12 +19,14 @@ const createStaff = async (
   if (await getStaffByEmail(email)) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Email is already taken');
   }
-  const checkDuplicateAdmin = role === 'ADMIN' && getAdminStaff;
-  const checkDuplicateQAManager = role === 'QA_MANAGER' && getQAManagerStaff;
 
-  if (checkDuplicateAdmin || checkDuplicateQAManager) {
+  const adminStaff = await getAdminStaff();
+  const qaMgrStaff = await getQAManagerStaff();
+
+  if ((role === 'ADMIN' && adminStaff) || (role === 'QA_MANAGER' && qaMgrStaff)) {
     throw new ApiError(httpStatus.BAD_REQUEST, `Cannot create two active ${role}s.`);
   }
+
   return prisma.staff.create({
     data: {
       email,
@@ -87,9 +89,7 @@ const queryStaffs = async <Key extends keyof Staff>(
  * @param {Array<Key>} keys
  * @returns {Promise<Pick<Staff, Key> | null>}
  */
-const getStaffById = async <Key extends keyof Staff>(
-  id: number
-): Promise<Pick<Staff, Key> | null> => {
+const getStaffById = async <Key extends keyof Staff>(id: number): Promise<Pick<Staff, Key>> => {
   const staff = prisma.staff.findUnique({
     where: { id },
     include: {
@@ -97,8 +97,11 @@ const getStaffById = async <Key extends keyof Staff>(
         select: { id: true, name: true }
       }
     }
-  }) as Promise<Pick<Staff, Key> | null>;
-  return staff;
+  });
+  if (!staff) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Staff not found');
+  }
+  return staff as Promise<Pick<Staff, Key>>;
 };
 
 /**
@@ -129,9 +132,6 @@ const updateStaffById = async <Key extends keyof Staff>(
   keys: Key[] = ['id', 'email', 'name', 'role'] as Key[]
 ): Promise<Pick<Staff, Key> | null> => {
   const staff = await getStaffById(staffId);
-  if (!staff) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Staff not found');
-  }
   if (updateBody.email && (await getStaffByEmail(updateBody.email as string))) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
   }
@@ -162,9 +162,6 @@ const toggleActive = async <Key extends keyof Staff>(
   keys: Key[] = ['id', 'email', 'name', 'role'] as Key[]
 ): Promise<Pick<Staff, Key> | null> => {
   const staff = await getStaffById(staffId);
-  if (!staff) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Staff not found');
-  }
 
   const updatedStaff = await prisma.staff.update({
     where: { id: staff.id },
@@ -180,9 +177,6 @@ const resetPassword = async <Key extends keyof Staff>(
   keys: Key[] = ['id', 'email', 'name', 'role'] as Key[]
 ): Promise<Pick<Staff, Key> | null> => {
   const staff = await getStaffById(staffId);
-  if (!staff) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Staff not found');
-  }
 
   const updatedStaff = await prisma.staff.update({
     where: { id: staff.id },
@@ -200,9 +194,7 @@ const changePassword = async <Key extends keyof Staff>(
   keys: Key[] = ['id', 'email', 'name', 'role'] as Key[]
 ): Promise<Pick<Staff, Key> | null> => {
   const staff = await getStaffById(staffId);
-  if (!staff) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Staff not found');
-  }
+
   if (!(await isPasswordMatch(oldPassword, staff.password as string))) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect old password!');
   }
@@ -219,19 +211,21 @@ const changePassword = async <Key extends keyof Staff>(
 const getAdminStaff = async <Key extends keyof Staff>(
   keys: Key[] = ['id', 'email', 'name', 'password', 'role', 'createdAt', 'updatedAt'] as Key[]
 ): Promise<Pick<Staff, Key> | null> => {
-  return prisma.staff.findFirst({
+  const adminStaff = await prisma.staff.findFirst({
     where: { isActive: true, role: 'ADMIN' },
     select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {})
-  }) as Promise<Pick<Staff, Key> | null>;
+  });
+  return adminStaff as Promise<Pick<Staff, Key> | null>;
 };
 
 const getQAManagerStaff = async <Key extends keyof Staff>(
   keys: Key[] = ['id', 'email', 'name', 'password', 'role', 'createdAt', 'updatedAt'] as Key[]
 ): Promise<Pick<Staff, Key> | null> => {
-  return prisma.staff.findFirst({
+  const qaMgrStaff = prisma.staff.findFirst({
     where: { isActive: true, role: 'QA_MANAGER' },
     select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {})
-  }) as Promise<Pick<Staff, Key> | null>;
+  });
+  return qaMgrStaff as Promise<Pick<Staff, Key> | null>;
 };
 
 export default {

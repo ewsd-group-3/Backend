@@ -53,7 +53,7 @@ model Department {
 
 model Category {
   id              Int             @id @default(autoincrement())
-  name            String
+  name            String          @unique
   ideaCategories  IdeaCategory[]
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @default(now())@updatedAt
@@ -61,9 +61,11 @@ model Category {
 
 model Idea {
   id              Int             @id @default(autoincrement())
-  name            String
-  staff           Staff           @relation(fields: [staffId], references: [id])
-  staffId         Int
+  title           String          
+  description     String          @db.LongText
+  isAnonymous     Boolean         @default(false)
+  author          Staff           @relation(fields: [authorId], references: [id])
+  authorId        Int
   semester        Semester        @relation(fields: [semesterId], references: [id])
   semesterId      Int
   comments        Comment[]
@@ -145,8 +147,8 @@ model Semester {
 
 model Announcement {
   id          Int                 @id @default(autoincrement())
-  name        String
-  content     String
+  subject     String
+  content     String              @db.LongText
   type        AudienceType
   announcer   Staff               @relation(fields: [announcerId], references: [id])
   announcerId Int

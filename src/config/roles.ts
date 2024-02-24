@@ -1,10 +1,10 @@
 import { Role } from '@prisma/client';
 
 const allRoles = {
-  [Role.STAFF]: ['staff'],
-  [Role.QA_COORDINATOR]: ['getReports', 'getAnnouncements', 'manageAnnouncements'],
-  [Role.QA_MANAGER]: ['getCategories', 'manageCategories', 'getReports'],
-  [Role.ADMIN]: ['getStaffs', 'manageStaffs', 'getDepartments', 'manageDepartments']
+  [Role.STAFF]: ['STAFF'],
+  [Role.QA_COORDINATOR]: ['STAFF', 'QA_COORDINATOR'],
+  [Role.QA_MANAGER]: ['STAFF', 'QA_MANAGER'],
+  [Role.ADMIN]: ['STAFF', 'ADMIN']
 };
 
 export const roles = Object.keys(allRoles);
