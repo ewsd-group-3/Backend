@@ -60,11 +60,18 @@ const changePassword = {
     .min(1)
 };
 
+const resetPassword = {
+  params: Joi.object().keys({
+    staffId: Joi.number().integer()
+  })
+};
+
 export default {
   createStaff,
   getStaffs,
   getStaff,
   updateStaff,
   deleteStaff,
-  changePassword
+  changePassword,
+  resetPassword
 };

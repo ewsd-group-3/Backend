@@ -7,6 +7,7 @@ CREATE TABLE `Staff` (
     `role` ENUM('STAFF', 'ADMIN', 'QA_MANAGER', 'QA_COORDINATOR') NOT NULL DEFAULT 'STAFF',
     `isActive` BOOLEAN NOT NULL DEFAULT true,
     `departmentId` INTEGER NOT NULL,
+    `lastLoginDate` DATETIME(3) NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
@@ -46,14 +47,17 @@ CREATE TABLE `Category` (
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
+    UNIQUE INDEX `Category_name_key`(`name`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
 CREATE TABLE `Idea` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `name` VARCHAR(191) NOT NULL,
-    `staffId` INTEGER NOT NULL,
+    `title` VARCHAR(191) NOT NULL,
+    `description` LONGTEXT NOT NULL,
+    `isAnonymous` BOOLEAN NOT NULL DEFAULT false,
+    `authorId` INTEGER NOT NULL,
     `semesterId` INTEGER NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
@@ -107,6 +111,17 @@ CREATE TABLE `Comment` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
+CREATE TABLE `View` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `staffId` INTEGER NOT NULL,
+    `ideaId` INTEGER NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `AcademicInfo` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
@@ -130,8 +145,8 @@ CREATE TABLE `Semester` (
 -- CreateTable
 CREATE TABLE `Announcement` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `name` VARCHAR(191) NOT NULL,
-    `content` VARCHAR(191) NOT NULL,
+    `subject` VARCHAR(191) NOT NULL,
+    `content` LONGTEXT NOT NULL,
     `type` ENUM('ALL', 'SPECIFIC') NOT NULL,
     `announcerId` INTEGER NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
@@ -158,7 +173,7 @@ ALTER TABLE `Staff` ADD CONSTRAINT `Staff_departmentId_fkey` FOREIGN KEY (`depar
 ALTER TABLE `Token` ADD CONSTRAINT `Token_staffId_fkey` FOREIGN KEY (`staffId`) REFERENCES `Staff`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Idea` ADD CONSTRAINT `Idea_staffId_fkey` FOREIGN KEY (`staffId`) REFERENCES `Staff`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Idea` ADD CONSTRAINT `Idea_authorId_fkey` FOREIGN KEY (`authorId`) REFERENCES `Staff`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Idea` ADD CONSTRAINT `Idea_semesterId_fkey` FOREIGN KEY (`semesterId`) REFERENCES `Semester`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -183,6 +198,12 @@ ALTER TABLE `Comment` ADD CONSTRAINT `Comment_staffId_fkey` FOREIGN KEY (`staffI
 
 -- AddForeignKey
 ALTER TABLE `Comment` ADD CONSTRAINT `Comment_ideaId_fkey` FOREIGN KEY (`ideaId`) REFERENCES `Idea`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `View` ADD CONSTRAINT `View_staffId_fkey` FOREIGN KEY (`staffId`) REFERENCES `Staff`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `View` ADD CONSTRAINT `View_ideaId_fkey` FOREIGN KEY (`ideaId`) REFERENCES `Idea`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Semester` ADD CONSTRAINT `Semester_academicInfoId_fkey` FOREIGN KEY (`academicInfoId`) REFERENCES `AcademicInfo`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
