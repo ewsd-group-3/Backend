@@ -26,6 +26,9 @@ model Staff {
   tokens            Token[]
   announcements     Announcement[]
   staffAnnouncement StaffAnnouncement[]
+  loginHistory      LoginHistory[]
+  report            Report[]
+  banList           BanList[]
   lastLoginDate     DateTime?
   createdAt         DateTime            @default(now())
   updatedAt         DateTime            @default(now())@updatedAt
@@ -54,6 +57,7 @@ model Department {
 model Category {
   id              Int             @id @default(autoincrement())
   name            String          @unique
+  status          String          @default("ACTIVE")
   ideaCategories  IdeaCategory[]
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @default(now())@updatedAt
@@ -73,6 +77,7 @@ model Idea {
   views           View[]
   ideaDocuments   IdeaDocument[]
   ideaCategories  IdeaCategory[]
+  report          Report[]
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @default(now())@updatedAt
 }
@@ -88,16 +93,20 @@ model IdeaCategory {
 }
 
 model IdeaDocument {
-  id          Int         @id @default(autoincrement())
-  name        String
-  idea        Idea        @relation(fields: [ideaId], references: [id])
-  ideaId      Int
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @default(now())@updatedAt
+  id                  Int         @id @default(autoincrement())
+  name                String
+  documenttype        String
+  documentDownloadUrl String
+  documentDeleteUrl   String
+  idea                Idea        @relation(fields: [ideaId], references: [id])
+  ideaId              Int
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @default(now())@updatedAt
 }
 
 model Vote {
   id          Int         @id @default(autoincrement())
+  isThumbUp   Boolean
   staff       Staff       @relation(fields: [staffId], references: [id])
   staffId     Int
   idea        Idea        @relation(fields: [ideaId], references: [id])
@@ -108,7 +117,8 @@ model Vote {
 
 model Comment {
   id          Int         @id @default(autoincrement())
-  name        String
+  content     String
+  isAnonymous Boolean     @default(false)
   staff       Staff       @relation(fields: [staffId], references: [id])
   staffId     Int
   idea        Idea        @relation(fields: [ideaId], references: [id])
@@ -130,6 +140,8 @@ model View {
 model AcademicInfo {
   id          Int         @id @default(autoincrement())
   name        String
+  startDate   DateTime
+  endDate     DateTime
   semesters   Semester[]
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @default(now())@updatedAt
@@ -138,6 +150,9 @@ model AcademicInfo {
 model Semester {
   id              Int           @id @default(autoincrement())
   name            String
+  startDate       DateTime
+  closureDate     DateTime
+  finalClosureDate DateTime
   academicInfo    AcademicInfo  @relation(fields: [academicInfoId], references: [id])
   academicInfoId  Int
   ideas           Idea[]
@@ -145,6 +160,7 @@ model Semester {
   updatedAt       DateTime      @default(now())@updatedAt
 }
 
+// Additional
 model Announcement {
   id          Int                 @id @default(autoincrement())
   subject     String
@@ -159,10 +175,55 @@ model Announcement {
 
 model StaffAnnouncement {
   id              Int           @id @default(autoincrement())
+  status          String        @default("PENDING")
   staff           Staff         @relation(fields: [staffId], references: [id])
   staffId         Int
+  departmentId    Int
   announcement    Announcement  @relation(fields: [announcementId], references: [id])
   announcementId  Int
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @default(now()) @updatedAt
+}
+
+model LoginHistory {
+  id              Int           @id @default(autoincrement())
+  browserName     String
+  staff           Staff         @relation(fields: [staffId], references: [id])
+  staffId         Int
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @default(now()) @updatedAt
+}
+
+model PageView {
+  id              Int           @id @default(autoincrement())
+  url             String
+  count           Int
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @default(now()) @updatedAt
+}
+
+model Report {
+  id              Int           @id @default(autoincrement())
+  reason          String
+  status          String  
+  approvedAt      DateTime      
+  idea            Idea          @relation(fields: [ideaId], references: [id])
+  ideaId          Int
+  // ideaBy          Staff         @relation(fields: [ideaById], references: [id])
+  ideaById        Int
+  reportBy        Staff         @relation(fields: [reportById], references: [id])
+  reportById      Int
+  approvedById    Int
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @default(now()) @updatedAt
+}
+
+model BanList {
+  id              Int           @id @default(autoincrement())
+  endTime         DateTime
+  status          String
+  staff           Staff         @relation(fields: [staffId], references: [id])
+  staffId         Int
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @default(now()) @updatedAt
 }

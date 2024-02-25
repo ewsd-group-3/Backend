@@ -1,0 +1,96 @@
+-- CreateTable
+CREATE TABLE `Announcement` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `subject` VARCHAR(191) NOT NULL,
+    `content` LONGTEXT NOT NULL,
+    `type` ENUM('ALL', 'SPECIFIC') NOT NULL,
+    `announcerId` INTEGER NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `StaffAnnouncement` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `status` VARCHAR(191) NOT NULL DEFAULT 'PENDING',
+    `staffId` INTEGER NOT NULL,
+    `departmentId` INTEGER NOT NULL,
+    `announcementId` INTEGER NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `LoginHistory` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `browserName` VARCHAR(191) NOT NULL,
+    `staffId` INTEGER NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `PageView` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `url` VARCHAR(191) NOT NULL,
+    `count` INTEGER NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `Report` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `reason` VARCHAR(191) NOT NULL,
+    `status` VARCHAR(191) NOT NULL,
+    `approvedAt` DATETIME(3) NOT NULL,
+    `ideaId` INTEGER NOT NULL,
+    `ideaById` INTEGER NOT NULL,
+    `reportById` INTEGER NOT NULL,
+    `approvedById` INTEGER NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `BanList` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `endTime` DATETIME(3) NOT NULL,
+    `status` VARCHAR(191) NOT NULL,
+    `staffId` INTEGER NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- AddForeignKey
+ALTER TABLE `Announcement` ADD CONSTRAINT `Announcement_announcerId_fkey` FOREIGN KEY (`announcerId`) REFERENCES `Staff`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `StaffAnnouncement` ADD CONSTRAINT `StaffAnnouncement_staffId_fkey` FOREIGN KEY (`staffId`) REFERENCES `Staff`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `StaffAnnouncement` ADD CONSTRAINT `StaffAnnouncement_announcementId_fkey` FOREIGN KEY (`announcementId`) REFERENCES `Announcement`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `LoginHistory` ADD CONSTRAINT `LoginHistory_staffId_fkey` FOREIGN KEY (`staffId`) REFERENCES `Staff`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Report` ADD CONSTRAINT `Report_ideaId_fkey` FOREIGN KEY (`ideaId`) REFERENCES `Idea`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Report` ADD CONSTRAINT `Report_ideaById_fkey` FOREIGN KEY (`ideaById`) REFERENCES `Staff`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `BanList` ADD CONSTRAINT `BanList_staffId_fkey` FOREIGN KEY (`staffId`) REFERENCES `Staff`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
