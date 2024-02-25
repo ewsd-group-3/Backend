@@ -5,8 +5,8 @@ import config from '../config/config';
 import authRoute from './auth/auth.routes';
 import staffRoute from './staff/staff.routes';
 import departmentRoute from './department/department.routes';
+import ideaRoute from './idea/idea.routes';
 import categoryRoute from './category/category.routes';
-// import authRoute from './auth/auth.routes';
 import docsRoute from './docs.routes';
 
 const router = express.Router();
@@ -23,6 +23,10 @@ const defaultRoutes = [
   {
     path: '/departments',
     route: departmentRoute
+  },
+  {
+    path: '/ideas',
+    route: ideaRoute
   },
   {
     path: '/categories',

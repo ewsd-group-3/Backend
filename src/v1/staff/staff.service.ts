@@ -128,9 +128,9 @@ const getStaffByEmail = async <Key extends keyof Staff>(
  */
 const updateStaffById = async <Key extends keyof Staff>(
   staffId: number,
-  updateBody: Prisma.StaffUpdateInput,
-  keys: Key[] = ['id', 'email', 'name', 'role'] as Key[]
-): Promise<Pick<Staff, Key> | null> => {
+  updateBody: Prisma.StaffUpdateInput
+  // keys: Key[] = ['id', 'email', 'name', 'role'] as Key[]
+): Promise<Pick<Staff, Key>> => {
   const staff = await getStaffById(staffId);
   if (updateBody.email && (await getStaffByEmail(updateBody.email as string))) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
@@ -138,9 +138,14 @@ const updateStaffById = async <Key extends keyof Staff>(
   const updatedStaff = await prisma.staff.update({
     where: { id: staff.id },
     data: updateBody,
-    select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {})
+    include: {
+      department: {
+        select: { id: true, name: true }
+      }
+    }
+    // select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {})
   });
-  return updatedStaff as Pick<Staff, Key> | null;
+  return updatedStaff as Pick<Staff, Key>;
 };
 
 /**
@@ -160,7 +165,7 @@ const deleteStaffById = async (staffId: number): Promise<Staff> => {
 const toggleActive = async <Key extends keyof Staff>(
   staffId: number,
   keys: Key[] = ['id', 'email', 'name', 'role'] as Key[]
-): Promise<Pick<Staff, Key> | null> => {
+): Promise<Pick<Staff, Key>> => {
   const staff = await getStaffById(staffId);
 
   const updatedStaff = await prisma.staff.update({
@@ -169,13 +174,13 @@ const toggleActive = async <Key extends keyof Staff>(
     select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {})
   });
 
-  return updatedStaff as Pick<Staff, Key> | null;
+  return updatedStaff as Pick<Staff, Key>;
 };
 
 const resetPassword = async <Key extends keyof Staff>(
   staffId: number,
   keys: Key[] = ['id', 'email', 'name', 'role'] as Key[]
-): Promise<Pick<Staff, Key> | null> => {
+): Promise<Pick<Staff, Key>> => {
   const staff = await getStaffById(staffId);
 
   const updatedStaff = await prisma.staff.update({
@@ -184,7 +189,7 @@ const resetPassword = async <Key extends keyof Staff>(
     select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {})
   });
 
-  return updatedStaff as Pick<Staff, Key> | null;
+  return updatedStaff as Pick<Staff, Key>;
 };
 
 const changePassword = async <Key extends keyof Staff>(
@@ -192,7 +197,7 @@ const changePassword = async <Key extends keyof Staff>(
   oldPassword: string,
   newPassword: string,
   keys: Key[] = ['id', 'email', 'name', 'role'] as Key[]
-): Promise<Pick<Staff, Key> | null> => {
+): Promise<Pick<Staff, Key>> => {
   const staff = await getStaffById(staffId);
 
   if (!(await isPasswordMatch(oldPassword, staff.password as string))) {
@@ -205,7 +210,7 @@ const changePassword = async <Key extends keyof Staff>(
     select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {})
   });
 
-  return updatedStaff as Pick<Staff, Key> | null;
+  return updatedStaff as Pick<Staff, Key>;
 };
 
 const getAdminStaff = async <Key extends keyof Staff>(
