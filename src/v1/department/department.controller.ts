@@ -5,34 +5,26 @@ import AppMessage from '../../constants/message.constant';
 import departmentService from './department.services';
 
 /* Utils */
-import ApiError from '../../utils/ApiError';
 import catchAsync from '../../utils/catchAsync';
 import successResponse from '../../utils/successResponse';
 import pick from '../../utils/pick';
-import exclude from '../../utils/exclude';
 
 const createDepartment = catchAsync(async (req, res) => {
   const { name } = req.body;
   const department = await departmentService.createDepartment(name);
-  const excludedDepartment = exclude(department, ['createdAt', 'updatedAt']);
-  successResponse(res, httpStatus.CREATED, AppMessage.departmentCreated, {
-    department: excludedDepartment
-  });
+  successResponse(res, httpStatus.CREATED, AppMessage.departmentCreated, { department });
 });
 
 const getDepartments = catchAsync(async (req, res) => {
   const filter = pick(req.query, ['name']);
-  const options = pick(req.query, ['sortBy', 'limit', 'page']);
+  const options = pick(req.query, ['sortType', 'sortBy', 'limit', 'page']);
   const result = await departmentService.queryDepartments(filter, options);
   successResponse(res, httpStatus.OK, AppMessage.retrievedSuccessful, result);
 });
 
 const getDepartment = catchAsync(async (req, res) => {
   const department = await departmentService.getDepartmentById(req.params.departmentId);
-  if (!department) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Department not found');
-  }
-  successResponse(res, httpStatus.OK, AppMessage.retrievedSuccessful, department);
+  successResponse(res, httpStatus.OK, AppMessage.retrievedSuccessful, { department });
 });
 
 const updateDepartment = catchAsync(async (req, res) => {
@@ -40,7 +32,7 @@ const updateDepartment = catchAsync(async (req, res) => {
     req.params.departmentId,
     req.body
   );
-  successResponse(res, httpStatus.OK, AppMessage.departmentUpdated, { ...department });
+  successResponse(res, httpStatus.OK, AppMessage.departmentUpdated, { department });
 });
 
 const deleteDepartment = catchAsync(async (req, res) => {

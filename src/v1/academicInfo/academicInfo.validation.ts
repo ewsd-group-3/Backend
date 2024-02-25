@@ -1,12 +1,12 @@
 import Joi from 'joi';
 
-const createDepartment = {
+const createAcademicInfo = {
   body: Joi.object().keys({
     name: Joi.string().required()
   })
 };
 
-const getDepartments = {
+const getAcademicInfos = {
   query: Joi.object().keys({
     name: Joi.string(),
     sortBy: Joi.string(),
@@ -16,15 +16,15 @@ const getDepartments = {
   })
 };
 
-const getDepartment = {
+const getAcademicInfo = {
   params: Joi.object().keys({
-    departmentId: Joi.number().integer()
+    academicInfoId: Joi.number().integer()
   })
 };
 
-const updateDepartment = {
+const updateAcademicInfo = {
   params: Joi.object().keys({
-    departmentId: Joi.number().integer()
+    academicInfoId: Joi.number().integer()
   }),
   body: Joi.object()
     .keys({
@@ -33,16 +33,16 @@ const updateDepartment = {
     .min(1)
 };
 
-const deleteDepartment = {
+const deleteAcademicInfo = {
   params: Joi.object().keys({
-    departmentId: Joi.number().integer()
+    academicInfoId: Joi.number().integer()
   })
 };
 
 export default {
-  createDepartment,
-  getDepartments,
-  getDepartment,
-  updateDepartment,
-  deleteDepartment
+  createAcademicInfo,
+  getAcademicInfos,
+  getAcademicInfo,
+  updateAcademicInfo,
+  deleteAcademicInfo
 };

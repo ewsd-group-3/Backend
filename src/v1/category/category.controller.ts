@@ -3,7 +3,6 @@ import categoryService from './category.service';
 import AppMessage from '../../constants/message.constant';
 
 /* Utils */
-import ApiError from '../../utils/ApiError';
 import catchAsync from '../../utils/catchAsync';
 import successResponse from '../../utils/successResponse';
 import pick from '../../utils/pick';
@@ -26,9 +25,6 @@ const getCategories = catchAsync(async (req, res) => {
 
 const getCategory = catchAsync(async (req, res) => {
   const category = await categoryService.getCategoryById(req.params.categoryId);
-  if (!category) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Category is not found');
-  }
   successResponse(res, httpStatus.OK, AppMessage.retrievedSuccessful, category);
 });
 

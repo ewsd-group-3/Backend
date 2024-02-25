@@ -57,7 +57,7 @@ model Department {
 model Category {
   id              Int             @id @default(autoincrement())
   name            String          @unique
-  status          String          @default("ACTIVE")
+  status          Boolean         @default(true)
   ideaCategories  IdeaCategory[]
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @default(now())@updatedAt
@@ -139,7 +139,7 @@ model View {
 
 model AcademicInfo {
   id          Int         @id @default(autoincrement())
-  name        String
+  name        String      @unique
   startDate   DateTime
   endDate     DateTime
   semesters   Semester[]
@@ -148,16 +148,16 @@ model AcademicInfo {
 }
 
 model Semester {
-  id              Int           @id @default(autoincrement())
-  name            String
-  startDate       DateTime
-  closureDate     DateTime
-  finalClosureDate DateTime
-  academicInfo    AcademicInfo  @relation(fields: [academicInfoId], references: [id])
-  academicInfoId  Int
-  ideas           Idea[]
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @default(now())@updatedAt
+  id                Int           @id @default(autoincrement())
+  name              String
+  startDate         DateTime
+  closureDate       DateTime
+  finalClosureDate  DateTime
+  academicInfo      AcademicInfo  @relation(fields: [academicInfoId], references: [id])
+  academicInfoId    Int
+  ideas             Idea[]
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @default(now())@updatedAt
 }
 
 // Additional
@@ -175,7 +175,7 @@ model Announcement {
 
 model StaffAnnouncement {
   id              Int           @id @default(autoincrement())
-  status          String        @default("PENDING")
+  status          Status        @default(PENDING)
   staff           Staff         @relation(fields: [staffId], references: [id])
   staffId         Int
   departmentId    Int
@@ -205,7 +205,7 @@ model PageView {
 model Report {
   id              Int           @id @default(autoincrement())
   reason          String
-  status          String  
+  status          Status  
   approvedAt      DateTime      
   idea            Idea          @relation(fields: [ideaId], references: [id])
   ideaId          Int
@@ -245,4 +245,11 @@ enum TokenType {
 enum AudienceType {
   ALL
   SPECIFIC
+}
+
+enum Status {
+  PENDING
+  ACTIVE
+  DONE
+  FAILED
 }
