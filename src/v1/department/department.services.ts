@@ -1,4 +1,4 @@
-import { Department, Role, Prisma } from '@prisma/client';
+import { Department, Prisma } from '@prisma/client';
 import httpStatus from 'http-status';
 import prisma from '../../prisma';
 import ApiError from '../../utils/ApiError';
@@ -36,19 +36,23 @@ const queryDepartments = async <Key extends keyof Department>(
     sortType?: 'asc' | 'desc';
   },
   keys: Key[] = ['id', 'name', 'createdAt', 'updatedAt'] as Key[]
-): Promise<Pick<Department, Key>[]> => {
+): Promise<{ count: number; departments: Pick<Department, Key>[] }> => {
   const page = options.page ?? 1;
   const limit = options.limit ?? 10;
   const sortBy = options.sortBy;
   const sortType = options.sortType ?? 'desc';
+
+  const count: number = await prisma.department.count({ where: filter });
+
   const departments = await prisma.department.findMany({
     where: filter,
     select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {}),
-    skip: page * limit,
+    skip: (page - 1) * limit,
     take: limit,
     orderBy: sortBy ? { [sortBy]: sortType } : undefined
   });
-  return departments as Pick<Department, Key>[];
+
+  return { count, departments: departments as Pick<Department, Key>[] };
 };
 
 /**
@@ -60,11 +64,15 @@ const queryDepartments = async <Key extends keyof Department>(
 const getDepartmentById = async <Key extends keyof Department>(
   id: number,
   keys: Key[] = ['id', 'name', 'createdAt', 'updatedAt'] as Key[]
-): Promise<Pick<Department, Key> | null> => {
-  return prisma.department.findUnique({
+): Promise<Pick<Department, Key>> => {
+  const department = await prisma.department.findUnique({
     where: { id },
     select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {})
-  }) as Promise<Pick<Department, Key> | null>;
+  });
+  if (!department) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Department is not found');
+  }
+  return department as Promise<Pick<Department, Key>>;
 };
 
 /**
@@ -92,21 +100,18 @@ const getDepartmentByName = async <Key extends keyof Department>(
 const updateDepartmentById = async <Key extends keyof Department>(
   departmentId: number,
   updateBody: Prisma.DepartmentUpdateInput,
-  keys: Key[] = ['id', 'email', 'name', 'role'] as Key[]
-): Promise<Pick<Department, Key> | null> => {
-  const department = await getDepartmentById(departmentId, ['id', 'name']);
-  if (!department) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Department not found');
-  }
+  keys: Key[] = ['id', 'name', 'createdAt', 'updatedAt'] as Key[]
+): Promise<Pick<Department, Key>> => {
+  const department = await getDepartmentById(departmentId);
   if (updateBody.name && (await getDepartmentByName(updateBody.name as string))) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
+    throw new ApiError(httpStatus.BAD_REQUEST, `Department ${updateBody.name} is already taken`);
   }
   const updatedDepartment = await prisma.department.update({
     where: { id: department.id },
     data: updateBody,
     select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {})
   });
-  return updatedDepartment as Pick<Department, Key> | null;
+  return updatedDepartment as Pick<Department, Key>;
 };
 
 /**
@@ -116,9 +121,6 @@ const updateDepartmentById = async <Key extends keyof Department>(
  */
 const deleteDepartmentById = async (departmentId: number): Promise<Department> => {
   const department = await getDepartmentById(departmentId);
-  if (!department) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Department not found');
-  }
   await prisma.department.delete({ where: { id: department.id } });
   return department;
 };

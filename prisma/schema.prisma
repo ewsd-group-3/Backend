@@ -140,7 +140,7 @@ model View {
 
 model AcademicInfo {
   id          Int         @id @default(autoincrement())
-  name        String
+  name        String      @unique
   startDate   DateTime
   endDate     DateTime
   semesters   Semester[]
@@ -149,16 +149,16 @@ model AcademicInfo {
 }
 
 model Semester {
-  id              Int           @id @default(autoincrement())
-  name            String
-  startDate       DateTime
-  closureDate     DateTime
-  finalClosureDate DateTime
-  academicInfo    AcademicInfo  @relation(fields: [academicInfoId], references: [id])
-  academicInfoId  Int
-  ideas           Idea[]
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @default(now())@updatedAt
+  id                Int           @id @default(autoincrement())
+  name              String
+  startDate         DateTime
+  closureDate       DateTime
+  finalClosureDate  DateTime
+  academicInfo      AcademicInfo  @relation(fields: [academicInfoId], references: [id])
+  academicInfoId    Int
+  ideas             Idea[]
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @default(now())@updatedAt
 }
 
 // Additional
@@ -237,6 +237,13 @@ enum TokenType {
 enum AudienceType {
   ALL
   SPECIFIC
+}
+
+enum Status {
+  PENDING
+  ACTIVE
+  DONE
+  FAILED
 }
 
 enum StaffAnnouncementStatus {
