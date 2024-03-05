@@ -7,6 +7,7 @@ import staffRoute from './staff/staff.routes';
 import departmentRoute from './department/department.routes';
 import ideaRoute from './idea/idea.routes';
 import categoryRoute from './category/category.routes';
+import academicRoute from './academicInfo/academicInfo.routes';
 import docsRoute from './docs.routes';
 
 const router = express.Router();
@@ -31,6 +32,10 @@ const defaultRoutes = [
   {
     path: '/categories',
     route: categoryRoute
+  },
+  {
+    path: '/academicInfos',
+    route: academicRoute
   }
 ];
 

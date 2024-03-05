@@ -2,7 +2,17 @@ import Joi from 'joi';
 
 const createAcademicInfo = {
   body: Joi.object().keys({
-    name: Joi.string().required()
+    name: Joi.string().required(),
+    startDate: Joi.date().required(),
+    endDate: Joi.date().required(),
+    semesters: Joi.array().items(
+      Joi.object().keys({
+        name: Joi.string().required(),
+        startDate: Joi.date().required(),
+        closureDate: Joi.date().required(),
+        finalClosureDate: Joi.date().required()
+      })
+    )
   })
 };
 
@@ -28,7 +38,17 @@ const updateAcademicInfo = {
   }),
   body: Joi.object()
     .keys({
-      name: Joi.string()
+      name: Joi.string().required(),
+      startDate: Joi.date().required(),
+      endDate: Joi.date().required(),
+      semesters: Joi.array().items(
+        Joi.object().keys({
+          name: Joi.string().required(),
+          startDate: Joi.date().required(),
+          closureDate: Joi.date().required(),
+          finalClosureDate: Joi.date().required()
+        })
+      )
     })
     .min(1)
 };
