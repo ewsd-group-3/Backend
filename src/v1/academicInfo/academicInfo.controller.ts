@@ -8,11 +8,30 @@ import academicInfoService from './academicInfo.services';
 import catchAsync from '../../utils/catchAsync';
 import successResponse from '../../utils/successResponse';
 import pick from '../../utils/pick';
+import { Semester } from '@prisma/client';
 
 const createAcademicInfo = catchAsync(async (req, res) => {
-  const { name } = req.body;
-  const academicInfo = await academicInfoService.createAcademicInfo(name);
-  successResponse(res, httpStatus.CREATED, AppMessage.academicInfoCreated, { academicInfo });
+  const { name, startDate, endDate, semesters } = req.body;
+  const academicInfo = await academicInfoService.createAcademicInfo(name, startDate, endDate);
+
+  const semesterAry: Semester[] = [];
+
+  semesters?.forEach(async (semester: Semester) => {
+    let sem = await academicInfoService.createSemester(
+      semester.name,
+      semester.startDate,
+      semester.closureDate,
+      semester.finalClosureDate,
+      academicInfo.id
+    );
+
+    semesterAry.push(sem);
+  });
+
+  successResponse(res, httpStatus.CREATED, AppMessage.academicInfoCreated, {
+    academicInfo,
+    semesterAry
+  });
 });
 
 const getAcademicInfos = catchAsync(async (req, res) => {
@@ -23,7 +42,9 @@ const getAcademicInfos = catchAsync(async (req, res) => {
 });
 
 const getAcademicInfo = catchAsync(async (req, res) => {
-  const academicInfo = await academicInfoService.getAcademicInfoById(req.params.academicInfoId);
+  const academicInfo = await academicInfoService.getAcademicInfoWithSemesterById(
+    req.params.academicInfoId
+  );
   successResponse(res, httpStatus.OK, AppMessage.retrievedSuccessful, academicInfo);
 });
 
@@ -32,6 +53,11 @@ const updateAcademicInfo = catchAsync(async (req, res) => {
     req.params.academicInfoId,
     req.body
   );
+
+  req.body.semesters?.forEach(async (semester: Semester) => {
+    let sem = await academicInfoService.updateSemesterById(semester.id, semester);
+  });
+
   successResponse(res, httpStatus.OK, AppMessage.academicInfoUpdated, { ...academicInfo });
 });
 

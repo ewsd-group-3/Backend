@@ -9,12 +9,12 @@ const router = express.Router();
 router
   .route('/')
   .post(
-    auth('ADMIN'),
+    // auth('ADMIN'),
     validate(academicInfoValidation.createAcademicInfo),
     academicInfoController.createAcademicInfo
   )
   .get(
-    auth('ADMIN'),
+    // auth('ADMIN'),
     validate(academicInfoValidation.getAcademicInfos),
     academicInfoController.getAcademicInfos
   );
@@ -22,17 +22,17 @@ router
 router
   .route('/:academicInfoId')
   .get(
-    auth('ADMIN'),
+    // auth('ADMIN'),
     validate(academicInfoValidation.getAcademicInfo),
     academicInfoController.getAcademicInfo
   )
   .patch(
-    auth('ADMIN'),
+    // auth('ADMIN'),
     validate(academicInfoValidation.updateAcademicInfo),
     academicInfoController.updateAcademicInfo
   )
   .delete(
-    auth('ADMIN'),
+    // auth('ADMIN'),
     validate(academicInfoValidation.deleteAcademicInfo),
     academicInfoController.deleteAcademicInfo
   );
