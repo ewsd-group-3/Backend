@@ -9,7 +9,7 @@ const router = express.Router();
 router
   .route('/')
   .post(
-    auth('QA_MANAGER'),
+    // auth('QA_MANAGER'),
     validate(categoryValidation.createCategory),
     categoryController.createCategory
   )

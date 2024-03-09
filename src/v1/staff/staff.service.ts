@@ -1,7 +1,7 @@
 import { Staff, Role, Prisma } from '@prisma/client';
 import httpStatus from 'http-status';
 import prisma from '../../prisma';
-import ApiError from '../../utils/ApiError';
+import ApiError from '../../utils/apiError';
 import { encryptPassword, isPasswordMatch } from '../../utils/encryption';
 import { defaultPassword } from '../../constants/message.constant';
 

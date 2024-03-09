@@ -6,7 +6,7 @@ import { AuthTokensResponse } from '../../types/response';
 import staffService from '../staff/staff.service';
 import tokenService from './token.service';
 
-import ApiError from '../../utils/ApiError';
+import ApiError from '../../utils/apiError';
 import { encryptPassword, isPasswordMatch } from '../../utils/encryption';
 import exclude from '../../utils/exclude';
 

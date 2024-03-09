@@ -1,7 +1,7 @@
 import { Department, Prisma } from '@prisma/client';
 import httpStatus from 'http-status';
 import prisma from '../../prisma';
-import ApiError from '../../utils/ApiError';
+import ApiError from '../../utils/apiError';
 
 /**
  * Create a department

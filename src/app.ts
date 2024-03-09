@@ -13,7 +13,7 @@ import xss from './middleWares/xss';
 import { authLimiter } from './middleWares/rateLimiter';
 import { errorConverter, errorHandler } from './middleWares/error';
 
-import ApiError from './utils/ApiError';
+import ApiError from './utils/apiError';
 
 import routes from './v1';
 

@@ -1,7 +1,7 @@
 import { AcademicInfo, Role, Prisma, Semester } from '@prisma/client';
 import httpStatus from 'http-status';
 import prisma from '../../prisma';
-import ApiError from '../../utils/ApiError';
+import ApiError from '../../utils/apiError';
 
 /**
  * Create a academicInfo
@@ -75,10 +75,6 @@ const queryAcademicInfos = async <Key extends keyof AcademicInfo>(
     take: limit,
     orderBy: sortBy ? { [sortBy]: sortType } : undefined
   });
-
-  console.log('page: ', page, 'limit: ', limit, 'sortBy: ', sortBy, 'sortType: ', sortType);
-
-  console.log(academicInfos);
 
   return academicInfos as Pick<AcademicInfo, Key>[];
 };

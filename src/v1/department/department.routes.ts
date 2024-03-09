@@ -9,7 +9,7 @@ const router = express.Router();
 router
   .route('/')
   .post(
-    auth('ADMIN'),
+    // auth('ADMIN'),
     validate(departmentValidation.createDepartment),
     departmentController.createDepartment
   )
