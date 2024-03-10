@@ -8,8 +8,8 @@ const router = express.Router();
 
 router
   .route('/')
-  .post(auth('STAFF'), validate(staffValidation.createStaff), staffController.createStaff)
-  .get(auth('ADMIN'), validate(staffValidation.getStaffs), staffController.getStaffs);
+  .post(auth('ADMIN'), validate(staffValidation.createStaff), staffController.createStaff)
+  .get(auth('STAFF'), validate(staffValidation.getStaffs), staffController.getStaffs);
 
 router
   .route('/change-password')
@@ -41,7 +41,7 @@ export default router;
  * /staffs:
  *   post:
  *     summary: Create a staff
- *     description: Only admins can create other staffs.
+ *     description: Only admin can create other staffs.
  *     tags: [Staffs]
  *     security:
  *       - bearerAuth: []

@@ -1,6 +1,7 @@
 import nodemailer from 'nodemailer';
 import config from '../../config/config';
 import logger from '../../config/logger';
+import emailTemplate from '../../utils/emailTemplate';
 
 const transport = nodemailer.createTransport(config.email.smtp);
 /* istanbul ignore next */
@@ -23,7 +24,7 @@ if (config.env !== 'test') {
  * @returns {Promise}
  */
 const sendEmail = async (to: string, subject: string, text: string) => {
-  const msg = { from: config.email.from, to, subject, text };
+  const msg = { from: config.email.from, to, subject, html: emailTemplate(text) };
   await transport.sendMail(msg);
 };
 

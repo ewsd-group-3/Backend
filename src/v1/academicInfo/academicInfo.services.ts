@@ -1,4 +1,4 @@
-import { AcademicInfo, Role, Prisma } from '@prisma/client';
+import { AcademicInfo, Role, Prisma, Semester } from '@prisma/client';
 import httpStatus from 'http-status';
 import prisma from '../../prisma';
 import ApiError from '../../utils/ApiError';
@@ -8,14 +8,41 @@ import ApiError from '../../utils/ApiError';
  * @param {Object} academicInfoBody
  * @returns {Promise<AcademicInfo>}
  */
-const createAcademicInfo = async (name: string): Promise<AcademicInfo> => {
+const createAcademicInfo = async (
+  name: string,
+  startDate: Date,
+  endDate: Date
+): Promise<AcademicInfo> => {
   // if (await getAcademicInfoByName(name)) {
   //   throw new ApiError(
   //     httpStatus.BAD_REQUEST,
   //     `AcademicInfo "${name}" already exists. Please Try Again!`
   //   );
   // }
-  return prisma.academicInfo.create({ data: { name } });
+  return prisma.academicInfo.create({ data: { name, startDate, endDate } });
+};
+
+/**
+ * Create a academicInfo
+ * @param {Object} semesterBody
+ * @returns {Promise<AcademicInfo>}
+ */
+const createSemester = async (
+  name: string,
+  startDate: Date,
+  closureDate: Date,
+  finalClosureDate: Date,
+  academicInfoId: number
+): Promise<Semester> => {
+  return prisma.semester.create({
+    data: {
+      name,
+      startDate,
+      closureDate,
+      finalClosureDate,
+      academicInfoId
+    }
+  });
 };
 
 /**
@@ -44,10 +71,15 @@ const queryAcademicInfos = async <Key extends keyof AcademicInfo>(
   const academicInfos = await prisma.academicInfo.findMany({
     where: filter,
     select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {}),
-    skip: page * limit,
+    skip: (page - 1) * limit,
     take: limit,
     orderBy: sortBy ? { [sortBy]: sortType } : undefined
   });
+
+  console.log('page: ', page, 'limit: ', limit, 'sortBy: ', sortBy, 'sortType: ', sortType);
+
+  console.log(academicInfos);
+
   return academicInfos as Pick<AcademicInfo, Key>[];
 };
 
@@ -60,6 +92,26 @@ const queryAcademicInfos = async <Key extends keyof AcademicInfo>(
 const getAcademicInfoById = async <Key extends keyof AcademicInfo>(
   id: number,
   keys: Key[] = ['id', 'name', 'createdAt', 'updatedAt'] as Key[]
+): Promise<Pick<AcademicInfo, Key>> => {
+  const academicInfo = await prisma.academicInfo.findUnique({
+    where: { id },
+    select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {})
+  });
+  if (!academicInfo) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'AcademicInfo is not found');
+  }
+  return academicInfo as Promise<Pick<AcademicInfo, Key>>;
+};
+
+/**
+ * Get academicInfo with semester by id
+ * @param {ObjectId} id
+ * @param {Array<Key>} keys
+ * @returns {Promise<Pick<AcademicInfo, Key> | null>}
+ */
+const getAcademicInfoWithSemesterById = async <Key extends keyof AcademicInfo>(
+  id: number,
+  keys: Key[] = ['id', 'name', 'createdAt', 'updatedAt', 'semesters'] as Key[]
 ): Promise<Pick<AcademicInfo, Key>> => {
   const academicInfo = await prisma.academicInfo.findUnique({
     where: { id },
@@ -96,7 +148,7 @@ const getAcademicInfoById = async <Key extends keyof AcademicInfo>(
 const updateAcademicInfoById = async <Key extends keyof AcademicInfo>(
   academicInfoId: number,
   updateBody: Prisma.AcademicInfoUpdateInput,
-  keys: Key[] = ['id', 'email', 'name', 'role'] as Key[]
+  keys: Key[] = ['id', 'name', 'createdAt', 'updatedAt', 'semesters'] as Key[]
 ): Promise<Pick<AcademicInfo, Key> | null> => {
   const academicInfo = await getAcademicInfoById(academicInfoId, ['id', 'name']);
   // if (updateBody.name && (await getAcademicInfoByName(updateBody.name as string))) {
@@ -111,20 +163,59 @@ const updateAcademicInfoById = async <Key extends keyof AcademicInfo>(
 };
 
 /**
+ * Update academicInfo by id
+ * @param {ObjectId} semesterId
+ * @param {Object} updateBody
+ * @returns {Promise<Semester>}
+ */
+const updateSemesterById = async <Key extends keyof Semester>(
+  semesterId: number,
+  updateBody: Prisma.SemesterUpdateInput,
+  keys: Key[] = [
+    'id',
+    'name',
+    'startDate',
+    'closureDate',
+    'finalClosureDate',
+    'academicInfoId',
+    'createdAt',
+    'updatedAt'
+  ] as Key[]
+): Promise<Pick<Semester, Key> | null> => {
+  const academicInfo = await getAcademicInfoById(semesterId, ['id', 'name']);
+  // if (updateBody.name && (await getAcademicInfoByName(updateBody.name as string))) {
+  //   throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
+  // }
+  const updatedSemester = await prisma.semester.update({
+    where: { id: academicInfo.id },
+    data: updateBody,
+    select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {})
+  });
+  return updatedSemester as Pick<Semester, Key> | null;
+};
+
+/**
  * Delete academicInfo by id
  * @param {ObjectId} academicInfoId
  * @returns {Promise<AcademicInfo>}
  */
 const deleteAcademicInfoById = async (academicInfoId: number): Promise<AcademicInfo> => {
+  // TODO: Need to check Idea is created or not within Semester to Delete
   const academicInfo = await getAcademicInfoById(academicInfoId);
+
+  await prisma.semester.deleteMany({ where: { academicInfoId: academicInfo.id } });
+
   await prisma.academicInfo.delete({ where: { id: academicInfo.id } });
   return academicInfo;
 };
 
 export default {
   createAcademicInfo,
+  createSemester,
   queryAcademicInfos,
   getAcademicInfoById,
+  getAcademicInfoWithSemesterById,
   updateAcademicInfoById,
+  updateSemesterById,
   deleteAcademicInfoById
 };

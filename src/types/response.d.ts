@@ -8,4 +8,11 @@ export interface AuthTokensResponse {
   refresh?: TokenResponse;
 }
 
+export interface AuthStaff {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+}
+
 // export interface

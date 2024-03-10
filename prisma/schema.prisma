@@ -27,8 +27,9 @@ model Staff {
   announcements     Announcement[]
   staffAnnouncement StaffAnnouncement[]
   loginHistory      LoginHistory[]
-  report            Report[]
-  banList           BanList[]
+  ideaBy            Report[]            @relation("ideaBy")
+  report            Report[]            @relation("reportBy")
+  approved          Report[]            @relation("approvedBy")
   lastLoginDate     DateTime?
   createdAt         DateTime            @default(now())
   updatedAt         DateTime            @default(now())@updatedAt
@@ -50,6 +51,7 @@ model Department {
   id          Int         @id @default(autoincrement())
   name        String      @unique
   staff       Staff[]
+  audiences   StaffAnnouncement[]
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @default(now())@updatedAt
 }
@@ -57,7 +59,7 @@ model Department {
 model Category {
   id              Int             @id @default(autoincrement())
   name            String          @unique
-  status          Boolean         @default(true)
+  isActive        Boolean         @default(true)
   ideaCategories  IdeaCategory[]
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @default(now())@updatedAt
@@ -160,7 +162,6 @@ model Semester {
   updatedAt         DateTime      @default(now())@updatedAt
 }
 
-// Additional
 model Announcement {
   id          Int                 @id @default(autoincrement())
   subject     String
@@ -174,17 +175,19 @@ model Announcement {
 }
 
 model StaffAnnouncement {
-  id              Int           @id @default(autoincrement())
-  status          Status        @default(PENDING)
-  staff           Staff         @relation(fields: [staffId], references: [id])
+  id              Int                         @id @default(autoincrement())
+  status          StaffAnnouncementStatus     @default(PENDING)
+  staff           Staff                       @relation(fields: [staffId], references: [id])
   staffId         Int
+  department      Department                  @relation(fields: [departmentId], references: [id])
   departmentId    Int
-  announcement    Announcement  @relation(fields: [announcementId], references: [id])
+  announcement    Announcement                @relation(fields: [announcementId], references: [id])
   announcementId  Int
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @default(now()) @updatedAt
+  createdAt       DateTime                    @default(now())
+  updatedAt       DateTime                    @default(now()) @updatedAt
 }
 
+// Additional
 model LoginHistory {
   id              Int           @id @default(autoincrement())
   browserName     String
@@ -205,25 +208,16 @@ model PageView {
 model Report {
   id              Int           @id @default(autoincrement())
   reason          String
-  status          Status  
+  isApproved      Boolean       @default(false)
   approvedAt      DateTime      
   idea            Idea          @relation(fields: [ideaId], references: [id])
-  ideaId          Int
-  // ideaBy          Staff         @relation(fields: [ideaById], references: [id])
+  ideaId          Int  
+  ideaBy          Staff         @relation("ideaBy", fields: [ideaById], references: [id])
   ideaById        Int
-  reportBy        Staff         @relation(fields: [reportById], references: [id])
+  reportBy        Staff         @relation("reportBy", fields: [reportById], references: [id])
   reportById      Int
+  approvedBy      Staff         @relation("approvedBy", fields: [approvedById], references: [id])
   approvedById    Int
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @default(now()) @updatedAt
-}
-
-model BanList {
-  id              Int           @id @default(autoincrement())
-  endTime         DateTime
-  status          String
-  staff           Staff         @relation(fields: [staffId], references: [id])
-  staffId         Int
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @default(now()) @updatedAt
 }
@@ -252,4 +246,10 @@ enum Status {
   ACTIVE
   DONE
   FAILED
+}
+
+enum StaffAnnouncementStatus {
+  PENDING
+  SUCCESS
+  FAIL
 }

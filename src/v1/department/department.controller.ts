@@ -18,8 +18,17 @@ const createDepartment = catchAsync(async (req, res) => {
 const getDepartments = catchAsync(async (req, res) => {
   const filter = pick(req.query, ['name']);
   const options = pick(req.query, ['sortType', 'sortBy', 'limit', 'page']);
-  const result = await departmentService.queryDepartments(filter, options);
-  successResponse(res, httpStatus.OK, AppMessage.retrievedSuccessful, result);
+  const { page, limit, count, totalPages, departments } = await departmentService.queryDepartments(
+    filter,
+    options
+  );
+  successResponse(res, httpStatus.OK, AppMessage.retrievedSuccessful, {
+    page,
+    limit,
+    count,
+    totalPages,
+    departments
+  });
 });
 
 const getDepartment = catchAsync(async (req, res) => {
