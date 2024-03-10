@@ -36,13 +36,20 @@ const queryDepartments = async <Key extends keyof Department>(
     sortType?: 'asc' | 'desc';
   },
   keys: Key[] = ['id', 'name', 'createdAt', 'updatedAt'] as Key[]
-): Promise<{ count: number; departments: Pick<Department, Key>[] }> => {
+): Promise<{
+  page: number;
+  limit: number;
+  count: number;
+  totalPages: number;
+  departments: Pick<Department, Key>[];
+}> => {
   const page = options.page ?? 1;
   const limit = options.limit ?? 10;
   const sortBy = options.sortBy;
   const sortType = options.sortType ?? 'desc';
 
   const count: number = await prisma.department.count({ where: filter });
+  const totalPages: number = Math.ceil(count / limit);
 
   const departments = await prisma.department.findMany({
     where: filter,
@@ -52,7 +59,7 @@ const queryDepartments = async <Key extends keyof Department>(
     orderBy: sortBy ? { [sortBy]: sortType } : undefined
   });
 
-  return { count, departments: departments as Pick<Department, Key>[] };
+  return { page, limit, count, totalPages, departments: departments as Pick<Department, Key>[] };
 };
 
 /**
@@ -121,6 +128,15 @@ const updateDepartmentById = async <Key extends keyof Department>(
  */
 const deleteDepartmentById = async (departmentId: number): Promise<Department> => {
   const department = await getDepartmentById(departmentId);
+  const staffs = await prisma.staff.findMany({
+    where: { departmentId: department.id }
+  });
+  if (staffs) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      `Cannot be Deleted! Staffs are in the Department '${department.name}'!`
+    );
+  }
   await prisma.department.delete({ where: { id: department.id } });
   return department;
 };

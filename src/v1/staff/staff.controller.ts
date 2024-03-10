@@ -20,10 +20,16 @@ const createStaff = catchAsync(async (req, res) => {
 const getStaffs = catchAsync(async (req, res) => {
   const filter = pick(req.query, ['name', 'role']);
   const options = pick(req.query, ['sortBy', 'sortType', 'limit', 'page']);
-  const { count, staffs } = await staffService.queryStaffs(filter, options);
+  const { page, limit, count, totalPages, staffs } = await staffService.queryStaffs(
+    filter,
+    options
+  );
   const excludedStaffs = staffs.map((staff) => exclude(staff, ['password']));
   successResponse(res, httpStatus.OK, AppMessage.retrievedSuccessful, {
+    page,
     count,
+    limit,
+    totalPages,
     staffs: excludedStaffs
   });
 });
