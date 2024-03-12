@@ -2,7 +2,20 @@ import Joi from 'joi';
 
 const createIdea = {
   body: Joi.object().keys({
-    name: Joi.string().required()
+    title: Joi.string().required(),
+    description: Joi.string().required(),
+    authorId: Joi.number().integer().required(),
+    semesterId: Joi.number().integer().required(),
+    isAnonymous: Joi.boolean().required(),
+    categoryIds: Joi.array().items(Joi.number().integer()).required(),
+    documents: Joi.array().items(
+      Joi.object().keys({
+        name: Joi.string().required(),
+        documenttype: Joi.string().required(),
+        documentDownloadUrl: Joi.string().required(),
+        documentDeleteUrl: Joi.string().required()
+      })
+    )
   })
 };
 
@@ -28,7 +41,18 @@ const updateIdea = {
   }),
   body: Joi.object()
     .keys({
-      name: Joi.string()
+      title: Joi.string().required(),
+      description: Joi.string().required(),
+      isAnonymous: Joi.boolean().required(),
+      categoryIds: Joi.array().items(Joi.number().integer()).required(),
+      documents: Joi.array().items(
+        Joi.object().keys({
+          name: Joi.string().required(),
+          documenttype: Joi.string().required(),
+          documentDownloadUrl: Joi.string().required(),
+          documentDeleteUrl: Joi.string().required()
+        })
+      )
     })
     .min(1)
 };

@@ -9,12 +9,12 @@ const router = express.Router();
 router
   .route('/')
   .post(
-    auth('QA_COORDINATOR'),
+    // auth('QA_COORDINATOR'),
     validate(announcementValidation.createAnnouncement),
     announcementController.createAnnouncement
   )
   .get(
-    auth('QA_COORDINATOR'),
+    // auth('QA_COORDINATOR'),
     validate(announcementValidation.getAnnouncements),
     announcementController.getAnnouncements
   );
@@ -22,17 +22,17 @@ router
 router
   .route('/:announcementId')
   .get(
-    auth('QA_COORDINATOR'),
+    // auth('QA_COORDINATOR'),
     validate(announcementValidation.getAnnouncement),
     announcementController.getAnnouncement
   )
   .patch(
-    auth('QA_COORDINATOR'),
+    // auth('QA_COORDINATOR'),
     validate(announcementValidation.updateAnnouncement),
     announcementController.updateAnnouncement
   )
   .delete(
-    auth('QA_COORDINATOR'),
+    // auth('QA_COORDINATOR'),
     validate(announcementValidation.deleteAnnouncement),
     announcementController.deleteAnnouncement
   );

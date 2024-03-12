@@ -59,5 +59,13 @@ export default {
       }
     },
     from: envVars.EMAIL_FROM
+  },
+  settings: {
+    idea: {
+      updateInterval: 1000 * 60 * 60 * 1
+    },
+    comment: {
+      updateInterval: 1000 * 60 * 60 * 1
+    }
   }
 };

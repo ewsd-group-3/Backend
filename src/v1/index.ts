@@ -9,6 +9,7 @@ import ideaRoute from './idea/idea.routes';
 import categoryRoute from './category/category.routes';
 import academicRoute from './academicInfo/academicInfo.routes';
 import announcementRoute from './announcement/announcement.routes';
+import commentRoute from './comment/comment.routes';
 import docsRoute from './docs.routes';
 
 const router = express.Router();
@@ -41,6 +42,10 @@ const defaultRoutes = [
   {
     path: '/announcements',
     route: announcementRoute
+  },
+  {
+    path: '/comments',
+    route: commentRoute
   }
 ];
 

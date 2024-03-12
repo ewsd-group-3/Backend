@@ -8,24 +8,47 @@ const router = express.Router();
 
 router
   .route('/')
-  .post(auth('ADMIN'), validate(staffValidation.createStaff), staffController.createStaff)
-  .get(auth('STAFF'), validate(staffValidation.getStaffs), staffController.getStaffs);
+  .post(
+    // auth('ADMIN'),
+    validate(staffValidation.createStaff),
+    staffController.createStaff
+  )
+  .get(
+    // auth('STAFF'),
+    validate(staffValidation.getStaffs),
+    staffController.getStaffs
+  );
 
-router
-  .route('/change-password')
-  .patch(auth('STAFF'), validate(staffValidation.changePassword), staffController.changePassword);
+router.route('/change-password').patch(
+  // auth('STAFF'),
+  validate(staffValidation.changePassword),
+  staffController.changePassword
+);
 
 router
   .route('/:staffId')
-  .get(auth('STAFF'), validate(staffValidation.getStaff), staffController.getStaff)
-  .patch(auth('ADMIN'), validate(staffValidation.updateStaff), staffController.updateStaff);
+  .get(
+    // auth('STAFF'),
+    validate(staffValidation.getStaff),
+    staffController.getStaff
+  )
+  .patch(
+    // auth('ADMIN'),
+    validate(staffValidation.updateStaff),
+    staffController.updateStaff
+  );
 // .delete(auth('manageStaffs'), validate(staffValidation.deleteStaff), staffController.deleteStaff);
 
-router.route('/toggle-active/:staffId').patch(auth('ADMIN'), staffController.toggleActive);
+router.route('/toggle-active/:staffId').patch(
+  // auth('ADMIN'),
+  staffController.toggleActive
+);
 
-router
-  .route('/reset-password/:staffId')
-  .patch(auth('ADMIN'), validate(staffValidation.resetPassword), staffController.resetPassword);
+router.route('/reset-password/:staffId').patch(
+  // auth('ADMIN'),
+  validate(staffValidation.resetPassword),
+  staffController.resetPassword
+);
 
 export default router;
 

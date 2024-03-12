@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import passport from 'passport';
 import httpStatus from 'http-status';
-import ApiError from '../utils/ApiError';
+import ApiError from '../utils/apiError';
 import { roleRights } from '../config/roles';
 import { Staff } from '@prisma/client';
 

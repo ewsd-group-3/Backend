@@ -1,7 +1,7 @@
-import { Idea, Prisma } from '@prisma/client';
+import { Idea, IdeaCategory, IdeaDocument, Prisma } from '@prisma/client';
 import httpStatus from 'http-status';
 import prisma from '../../prisma';
-import ApiError from '../../utils/ApiError';
+import ApiError from '../../utils/apiError';
 
 /**
  * Create a Idea
@@ -16,6 +16,43 @@ const createIdea = async (
   isAnonymous: boolean
 ): Promise<Idea> => {
   return prisma.idea.create({ data: { title, description, authorId, semesterId, isAnonymous } });
+};
+
+/**
+ * Create a Idea
+ * @param {Object} IdeaBody
+ * @returns {Promise<Idea>}
+ */
+const addIdeaCategories = async (
+  ideaId: number,
+  categoryIds: number[]
+): Promise<IdeaCategory[]> => {
+  let ideaCategories: IdeaCategory[] = [];
+
+  categoryIds.forEach(async (categoryId) => {
+    ideaCategories.push(await prisma.ideaCategory.create({ data: { ideaId, categoryId } }));
+  });
+
+  return ideaCategories;
+};
+
+/**
+ * Create a Idea
+ * @param {Object} IdeaBody
+ * @returns {Promise<Idea>}
+ */
+const addIdeaDocument = async (
+  name: string,
+  documenttype: string,
+  documentDownloadUrl: string,
+  documentDeleteUrl: string,
+  ideaId: number
+): Promise<IdeaDocument> => {
+  var ideaDoc = prisma.ideaDocument.create({
+    data: { name, documenttype, documentDownloadUrl, documentDeleteUrl, ideaId }
+  });
+
+  return ideaDoc;
 };
 
 /**
@@ -35,22 +72,42 @@ const queryIdeas = async <Key extends keyof Idea>(
     sortBy?: string;
     sortType?: 'asc' | 'desc';
   }
-): Promise<{ count: number; ideas: Pick<Idea, Key>[] }> => {
+  // keys: Key[] = ['id', 'name', 'createdAt', 'updatedAt'] as Key[]
+): Promise<{
+  page: number;
+  limit: number;
+  count: number;
+  totalPages: number;
+  ideas: Pick<Idea, Key>[];
+}> => {
   const page = options.page ?? 1;
   const limit = options.limit ?? 10;
   const sortBy = options.sortBy;
   const sortType = options.sortType ?? 'desc';
 
   const count: number = await prisma.idea.count({ where: filter });
+  const totalPages: number = Math.ceil(count / limit);
 
   const ideas = await prisma.idea.findMany({
     where: filter,
+    // select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {}),
+    include: {
+      ideaCategories: {
+        include: {
+          category: true
+        }
+      },
+      author: true,
+      votes: true,
+      comments: true,
+      views: true
+    },
     skip: (page - 1) * limit,
     take: limit,
     orderBy: sortBy ? { [sortBy]: sortType } : undefined
   });
 
-  return { count, ideas: ideas as Pick<Idea, Key>[] };
+  return { page, limit, count, totalPages, ideas: ideas as Pick<Idea, Key>[] };
 };
 
 /**
@@ -60,7 +117,48 @@ const queryIdeas = async <Key extends keyof Idea>(
  * @returns {Promise<Pick<Idea, Key>>}
  */
 const getIdeaById = async <Key extends keyof Idea>(id: number): Promise<Pick<Idea, Key>> => {
-  const idea = prisma.idea.findUnique({ where: { id } });
+  const idea = prisma.idea.findUnique({
+    where: { id }
+  });
+
+  if (!idea) throw new ApiError(httpStatus.NOT_FOUND, 'Idea is not found');
+  return idea as Promise<Pick<Idea, Key>>;
+};
+
+/**
+ * Get Idea by id
+ * @param {ObjectId} id
+ * @param {Array<Key>} keys
+ * @returns {Promise<Pick<Idea, Key>>}
+ */
+const getIdeaDetailById = async <Key extends keyof Idea>(id: number): Promise<Pick<Idea, Key>> => {
+  const idea = prisma.idea.findUnique({
+    where: { id },
+    include: {
+      ideaCategories: {
+        include: {
+          category: true
+        }
+      },
+      author: {
+        select: {
+          id: true,
+          name: true,
+          email: true
+        }
+      },
+      semester: true,
+      comments: {
+        include: {
+          staff: true
+        }
+      },
+      votes: true,
+      views: true,
+      ideaDocuments: true
+    }
+  });
+
   if (!idea) throw new ApiError(httpStatus.NOT_FOUND, 'Idea is not found');
   return idea as Promise<Pick<Idea, Key>>;
 };
@@ -73,15 +171,21 @@ const getIdeaById = async <Key extends keyof Idea>(id: number): Promise<Pick<Ide
  */
 const updateIdeaById = async <Key extends keyof Idea>(
   ideaId: number,
-  updateBody: Prisma.IdeaUpdateInput,
-  keys: Key[] = ['id', 'name'] as Key[]
+  title: string,
+  description: string,
+  isAnonymous: boolean,
+  keys: Key[] = ['id', 'title', 'description', 'isAnonymous'] as Key[]
 ): Promise<Pick<Idea, Key>> => {
   const idea = await getIdeaById(ideaId);
   const updatedIdea = await prisma.idea.update({
     where: { id: idea.id },
-    data: updateBody,
-    select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {})
+    data: {
+      title,
+      description,
+      isAnonymous
+    }
   });
+
   return updatedIdea as Pick<Idea, Key>;
 };
 
@@ -92,14 +196,82 @@ const updateIdeaById = async <Key extends keyof Idea>(
  */
 const deleteIdeaById = async (IdeaId: number): Promise<Idea> => {
   const idea = await getIdeaById(IdeaId);
+
+  console.log('My log - IdeaId: ', IdeaId, ' Idea: ', idea);
+
+  await prisma.idea.update({
+    where: { id: idea.id },
+    data: {
+      comments: {
+        deleteMany: {}
+      },
+      ideaCategories: {
+        deleteMany: {}
+      },
+      ideaDocuments: {
+        deleteMany: {}
+      },
+      votes: {
+        deleteMany: {}
+      },
+      views: {
+        deleteMany: {}
+      }
+    }
+  });
+
   await prisma.idea.delete({ where: { id: idea.id } });
+  return idea;
+};
+
+/**
+ * Delete Idea by id
+ * @param {ObjectId} IdeaId
+ * @returns {Promise<Idea>}
+ */
+const deleteIdeaCategoriesByIdeaId = async (IdeaId: number): Promise<Idea> => {
+  const idea = await getIdeaById(IdeaId);
+
+  await prisma.idea.update({
+    where: { id: idea.id },
+    data: {
+      ideaCategories: {
+        deleteMany: {}
+      }
+    }
+  });
+
+  return idea;
+};
+/**
+ * Delete Idea by id
+ * @param {ObjectId} IdeaId
+ * @returns {Promise<Idea>}
+ */
+const deleteIdeaDocumentsByIdeaId = async (IdeaId: number): Promise<Idea> => {
+  const idea = await getIdeaById(IdeaId);
+
+  await prisma.idea.update({
+    where: { id: idea.id },
+    data: {
+      ideaDocuments: {
+        deleteMany: {}
+      }
+    }
+  });
+
   return idea;
 };
 
 export default {
   createIdea,
+  addIdeaCategories,
+  addIdeaDocument,
   queryIdeas,
   getIdeaById,
+  getIdeaDetailById,
   updateIdeaById,
-  deleteIdeaById
+  deleteIdeaById,
+  deleteIdeaCategoriesByIdeaId,
+  deleteIdeaDocumentsByIdeaId
 };

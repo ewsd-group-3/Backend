@@ -75,3 +75,6 @@ typings/
 src/config/config.json
 src/config/digitnet-3ee71-firebase-adminsdk-5okyx-dc6d2d4a87.json
 src/seeders
+
+# Build files
+dist

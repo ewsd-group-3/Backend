@@ -1,7 +1,7 @@
 import { Announcement, AudienceType, Prisma, Staff, StaffAnnouncementStatus } from '@prisma/client';
 import httpStatus from 'http-status';
 import prisma from '../../prisma';
-import ApiError from '../../utils/ApiError';
+import ApiError from '../../utils/apiError';
 import emailService from '../auth/email.service';
 import { AuthStaff } from '../../types/response';
 
