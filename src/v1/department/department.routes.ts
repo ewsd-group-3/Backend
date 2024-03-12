@@ -14,7 +14,7 @@ router
     departmentController.createDepartment
   )
   .get(
-    auth('ADMIN'),
+    // auth('ADMIN'),
     validate(departmentValidation.getDepartments),
     departmentController.getDepartments
   );
@@ -22,17 +22,17 @@ router
 router
   .route('/:departmentId')
   .get(
-    auth('ADMIN'),
+    // auth('ADMIN'),
     validate(departmentValidation.getDepartment),
     departmentController.getDepartment
   )
   .patch(
-    auth('ADMIN'),
+    // auth('ADMIN'),
     validate(departmentValidation.updateDepartment),
     departmentController.updateDepartment
   )
   .delete(
-    auth('ADMIN'),
+    // auth('ADMIN'),
     validate(departmentValidation.deleteDepartment),
     departmentController.deleteDepartment
   );

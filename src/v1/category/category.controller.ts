@@ -16,9 +16,15 @@ const createCategory = catchAsync(async (req, res) => {
 const getCategories = catchAsync(async (req, res) => {
   const filter = pick(req.query, ['name']);
   const options = pick(req.query, ['sortBy', 'sortType', 'limit', 'page']);
-  const { count, categories } = await categoryService.queryCategories(filter, options);
+  const { page, limit, count, totalPages, categories } = await categoryService.queryCategories(
+    filter,
+    options
+  );
   successResponse(res, httpStatus.OK, AppMessage.retrievedSuccessful, {
+    page,
+    limit,
     count,
+    totalPages,
     categories
   });
 });

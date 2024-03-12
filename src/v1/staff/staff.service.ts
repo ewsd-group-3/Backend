@@ -60,27 +60,30 @@ const queryStaffs = async <Key extends keyof Staff>(
     sortBy?: string;
     sortType?: 'asc' | 'desc';
   }
-): Promise<{ count: number; staffs: Pick<Staff, Key>[] }> => {
+): Promise<{
+  page: number;
+  limit: number;
+  count: number;
+  totalPages: number;
+  staffs: Pick<Staff, Key>[];
+}> => {
   const page = options.page ?? 1;
   const limit = options.limit ?? 10;
   const sortBy = options.sortBy;
   const sortType = options.sortType ?? 'desc';
 
   const count: number = await prisma.staff.count({ where: filter });
+  const totalPages: number = Math.ceil(count / limit);
 
   const staffs = await prisma.staff.findMany({
     where: filter,
-    include: {
-      department: {
-        select: { id: true, name: true }
-      }
-    },
+    include: { department: {} },
     skip: (page - 1) * limit,
     take: limit,
     orderBy: sortBy ? { [sortBy]: sortType } : undefined
   });
 
-  return { count, staffs: staffs as Pick<Staff, Key>[] };
+  return { page, limit, count, totalPages, staffs: staffs as Pick<Staff, Key>[] };
 };
 
 /**
@@ -90,7 +93,7 @@ const queryStaffs = async <Key extends keyof Staff>(
  * @returns {Promise<Pick<Staff, Key> | null>}
  */
 const getStaffById = async <Key extends keyof Staff>(id: number): Promise<Pick<Staff, Key>> => {
-  const staff = prisma.staff.findUnique({
+  const staff = await prisma.staff.findUnique({
     where: { id },
     include: {
       department: {
@@ -99,9 +102,9 @@ const getStaffById = async <Key extends keyof Staff>(id: number): Promise<Pick<S
     }
   });
   if (!staff) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Staff not found');
+    throw new ApiError(httpStatus.NOT_FOUND, 'Staff is not found');
   }
-  return staff as Promise<Pick<Staff, Key>>;
+  return staff;
 };
 
 /**
@@ -114,10 +117,10 @@ const getStaffByEmail = async <Key extends keyof Staff>(
   email: string,
   keys: Key[] = ['id', 'email', 'name', 'password', 'role', 'createdAt', 'updatedAt'] as Key[]
 ): Promise<Pick<Staff, Key> | null> => {
-  return prisma.staff.findUnique({
+  return (await prisma.staff.findUnique({
     where: { email },
     select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {})
-  }) as Promise<Pick<Staff, Key> | null>;
+  })) as Promise<Pick<Staff, Key> | null>;
 };
 
 /**

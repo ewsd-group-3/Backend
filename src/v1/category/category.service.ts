@@ -32,13 +32,20 @@ const queryCategories = async <Key extends keyof Category>(
     sortBy?: string;
     sortType?: 'asc' | 'desc';
   }
-): Promise<{ count: number; categories: Pick<Category, Key>[] }> => {
+): Promise<{
+  page: number;
+  limit: number;
+  count: number;
+  totalPages: number;
+  categories: Pick<Category, Key>[];
+}> => {
   const page = options.page ?? 1;
   const limit = options.limit ?? 10;
   const sortBy = options.sortBy;
   const sortType = options.sortType ?? 'desc';
 
   const count: number = await prisma.category.count({ where: filter });
+  const totalPages: number = Math.ceil(count / limit);
 
   const categories = await prisma.category.findMany({
     where: filter,
@@ -47,7 +54,7 @@ const queryCategories = async <Key extends keyof Category>(
     orderBy: sortBy ? { [sortBy]: sortType } : undefined
   });
 
-  return { count, categories: categories as Pick<Category, Key>[] };
+  return { page, limit, count, totalPages, categories: categories as Pick<Category, Key>[] };
 };
 
 /**

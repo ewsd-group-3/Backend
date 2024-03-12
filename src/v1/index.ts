@@ -8,6 +8,7 @@ import departmentRoute from './department/department.routes';
 import ideaRoute from './idea/idea.routes';
 import categoryRoute from './category/category.routes';
 import academicRoute from './academicInfo/academicInfo.routes';
+import announcementRoute from './announcement/announcement.routes';
 import commentRoute from './comment/comment.routes';
 import voteRoute from './vote/vote.routes';
 import reportRoute from './report/report.routes';
@@ -39,6 +40,10 @@ const defaultRoutes = [
   {
     path: '/academicInfos',
     route: academicRoute
+  },
+  {
+    path: '/announcements',
+    route: announcementRoute
   },
   {
     path: '/comments',

@@ -12,9 +12,11 @@ components:
           type: string
         role:
           type: string
-          enum: [STAFF, ADMIN]
+          enum: [STAFF, ADMIN, QA_MANAGER, QA_COORDINATOR]
+        password:
+          type: string
       example:
-        id: 5ebac534954b54139806c112
+        id: 1
         email: fake@example.com
         name: fake name
         role: STAFF
@@ -42,7 +44,7 @@ components:
     Error:
       type: object
       properties:
-        code:
+        statusCode:
           type: number
         message:
           type: string

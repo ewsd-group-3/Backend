@@ -51,6 +51,7 @@ model Department {
   id          Int         @id @default(autoincrement())
   name        String      @unique
   staff       Staff[]
+  audiences   StaffAnnouncement[]
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @default(now())@updatedAt
 }
@@ -162,7 +163,6 @@ model Semester {
   updatedAt         DateTime      @default(now())@updatedAt
 }
 
-// Additional
 model Announcement {
   id          Int                 @id @default(autoincrement())
   subject     String
@@ -180,6 +180,7 @@ model StaffAnnouncement {
   status          StaffAnnouncementStatus     @default(PENDING)
   staff           Staff                       @relation(fields: [staffId], references: [id])
   staffId         Int
+  department      Department                  @relation(fields: [departmentId], references: [id])
   departmentId    Int
   announcement    Announcement                @relation(fields: [announcementId], references: [id])
   announcementId  Int
@@ -187,6 +188,7 @@ model StaffAnnouncement {
   updatedAt       DateTime                    @default(now()) @updatedAt
 }
 
+// Additional
 model LoginHistory {
   id              Int           @id @default(autoincrement())
   browserName     String
