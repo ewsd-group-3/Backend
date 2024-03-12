@@ -148,7 +148,11 @@ const getIdeaDetailById = async <Key extends keyof Idea>(id: number): Promise<Pi
         }
       },
       semester: true,
-      comments: true,
+      comments: {
+        include: {
+          staff: true
+        }
+      },
       votes: true,
       views: true,
       ideaDocuments: true
@@ -167,15 +171,21 @@ const getIdeaDetailById = async <Key extends keyof Idea>(id: number): Promise<Pi
  */
 const updateIdeaById = async <Key extends keyof Idea>(
   ideaId: number,
-  updateBody: Prisma.IdeaUpdateInput,
-  keys: Key[] = ['id', 'name'] as Key[]
+  title: string,
+  description: string,
+  isAnonymous: boolean,
+  keys: Key[] = ['id', 'title', 'description', 'isAnonymous'] as Key[]
 ): Promise<Pick<Idea, Key>> => {
   const idea = await getIdeaById(ideaId);
   const updatedIdea = await prisma.idea.update({
     where: { id: idea.id },
-    data: updateBody,
-    select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {})
+    data: {
+      title,
+      description,
+      isAnonymous
+    }
   });
+
   return updatedIdea as Pick<Idea, Key>;
 };
 
@@ -186,7 +196,70 @@ const updateIdeaById = async <Key extends keyof Idea>(
  */
 const deleteIdeaById = async (IdeaId: number): Promise<Idea> => {
   const idea = await getIdeaById(IdeaId);
+
+  console.log('My log - IdeaId: ', IdeaId, ' Idea: ', idea);
+
+  await prisma.idea.update({
+    where: { id: idea.id },
+    data: {
+      comments: {
+        deleteMany: {}
+      },
+      ideaCategories: {
+        deleteMany: {}
+      },
+      ideaDocuments: {
+        deleteMany: {}
+      },
+      votes: {
+        deleteMany: {}
+      },
+      views: {
+        deleteMany: {}
+      }
+    }
+  });
+
   await prisma.idea.delete({ where: { id: idea.id } });
+  return idea;
+};
+
+/**
+ * Delete Idea by id
+ * @param {ObjectId} IdeaId
+ * @returns {Promise<Idea>}
+ */
+const deleteIdeaCategoriesByIdeaId = async (IdeaId: number): Promise<Idea> => {
+  const idea = await getIdeaById(IdeaId);
+
+  await prisma.idea.update({
+    where: { id: idea.id },
+    data: {
+      ideaCategories: {
+        deleteMany: {}
+      }
+    }
+  });
+
+  return idea;
+};
+/**
+ * Delete Idea by id
+ * @param {ObjectId} IdeaId
+ * @returns {Promise<Idea>}
+ */
+const deleteIdeaDocumentsByIdeaId = async (IdeaId: number): Promise<Idea> => {
+  const idea = await getIdeaById(IdeaId);
+
+  await prisma.idea.update({
+    where: { id: idea.id },
+    data: {
+      ideaDocuments: {
+        deleteMany: {}
+      }
+    }
+  });
+
   return idea;
 };
 
@@ -198,5 +271,7 @@ export default {
   getIdeaById,
   getIdeaDetailById,
   updateIdeaById,
-  deleteIdeaById
+  deleteIdeaById,
+  deleteIdeaCategoriesByIdeaId,
+  deleteIdeaDocumentsByIdeaId
 };

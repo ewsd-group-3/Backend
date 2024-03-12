@@ -63,12 +63,30 @@ const getIdea = catchAsync(async (req, res) => {
 });
 
 const updateIdea = catchAsync(async (req, res) => {
-  const idea = await ideaService.updateIdeaById(req.params.ideaId, req.body);
+  var { categoryIds, documents, title, description, isAnonymous } = req.body;
+
+  await ideaService.deleteIdeaCategoriesByIdeaId(req.params.ideaId);
+  await ideaService.deleteIdeaDocumentsByIdeaId(req.params.ideaId);
+
+  const idea = await ideaService.updateIdeaById(req.params.ideaId, title, description, isAnonymous);
+
+  await ideaService.addIdeaCategories(req.params.ideaId, categoryIds);
+
+  documents.forEach(async (document: IdeaDocument) => {
+    await ideaService.addIdeaDocument(
+      document.name,
+      document.documenttype,
+      document.documentDownloadUrl,
+      document.documentDeleteUrl,
+      req.params.ideaId
+    );
+  });
+
   successResponse(res, httpStatus.OK, AppMessage.ideaUpdated, { ...idea });
 });
 
 const deleteIdea = catchAsync(async (req, res) => {
-  await ideaService.deleteIdeaById(req.params.staffId);
+  await ideaService.deleteIdeaById(req.params.ideaId);
   successResponse(res, httpStatus.NO_CONTENT, AppMessage.ideaDeleted);
 });
 

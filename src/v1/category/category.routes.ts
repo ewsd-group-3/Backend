@@ -13,7 +13,11 @@ router
     validate(categoryValidation.createCategory),
     categoryController.createCategory
   )
-  .get(auth('STAFF'), validate(categoryValidation.getCategories), categoryController.getCategories);
+  .get(
+    // auth('STAFF'),
+    validate(categoryValidation.getCategories),
+    categoryController.getCategories
+  );
 
 router
   .route('/:categoryId')

@@ -21,10 +21,15 @@ const AppMessage = {
   categoryUpdated: 'Category information has been updated',
   categoryDeleted: 'Category is deleted',
 
-  // category
+  // idea
   ideaCreated: 'Idea is Created',
   ideaUpdated: 'Idea information has been updated',
   ideaDeleted: 'Idea is deleted',
+
+  // comment
+  commentCreated: 'Comment is Created',
+  commentUpdated: 'Comment information has been updated',
+  commentDeleted: 'Comment is deleted',
 
   // OTP
   sendOTP: 'Send OTP your phone',

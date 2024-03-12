@@ -13,7 +13,11 @@ router
     validate(staffValidation.createStaff),
     staffController.createStaff
   )
-  .get(auth('ADMIN'), validate(staffValidation.getStaffs), staffController.getStaffs);
+  .get(
+    // auth('ADMIN'),
+    validate(staffValidation.getStaffs),
+    staffController.getStaffs
+  );
 
 router
   .route('/change-password')
