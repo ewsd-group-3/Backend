@@ -94,7 +94,7 @@ const getAcademicInfoById = async <Key extends keyof AcademicInfo>(
     select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {})
   });
   if (!academicInfo) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'AcademicInfo not found');
+    throw new ApiError(httpStatus.NOT_FOUND, 'AcademicInfo is not found');
   }
   return academicInfo as Promise<Pick<AcademicInfo, Key>>;
 };
@@ -196,6 +196,7 @@ const updateSemesterById = async <Key extends keyof Semester>(
  * @returns {Promise<AcademicInfo>}
  */
 const deleteAcademicInfoById = async (academicInfoId: number): Promise<AcademicInfo> => {
+  // TODO: Need to check Idea is created or not within Semester to Delete
   const academicInfo = await getAcademicInfoById(academicInfoId);
 
   await prisma.semester.deleteMany({ where: { academicInfoId: academicInfo.id } });

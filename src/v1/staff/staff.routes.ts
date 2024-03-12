@@ -9,31 +9,46 @@ const router = express.Router();
 router
   .route('/')
   .post(
-    // auth('STAFF'),
+    // auth('ADMIN'),
     validate(staffValidation.createStaff),
     staffController.createStaff
   )
   .get(
-    // auth('ADMIN'),
+    // auth('STAFF'),
     validate(staffValidation.getStaffs),
     staffController.getStaffs
   );
 
-router
-  .route('/change-password')
-  .patch(auth('STAFF'), validate(staffValidation.changePassword), staffController.changePassword);
+router.route('/change-password').patch(
+  // auth('STAFF'),
+  validate(staffValidation.changePassword),
+  staffController.changePassword
+);
 
 router
   .route('/:staffId')
-  .get(auth('STAFF'), validate(staffValidation.getStaff), staffController.getStaff)
-  .patch(auth('ADMIN'), validate(staffValidation.updateStaff), staffController.updateStaff);
+  .get(
+    // auth('STAFF'),
+    validate(staffValidation.getStaff),
+    staffController.getStaff
+  )
+  .patch(
+    // auth('ADMIN'),
+    validate(staffValidation.updateStaff),
+    staffController.updateStaff
+  );
 // .delete(auth('manageStaffs'), validate(staffValidation.deleteStaff), staffController.deleteStaff);
 
-router.route('/toggle-active/:staffId').patch(auth('ADMIN'), staffController.toggleActive);
+router.route('/toggle-active/:staffId').patch(
+  // auth('ADMIN'),
+  staffController.toggleActive
+);
 
-router
-  .route('/reset-password/:staffId')
-  .patch(auth('ADMIN'), validate(staffValidation.resetPassword), staffController.resetPassword);
+router.route('/reset-password/:staffId').patch(
+  // auth('ADMIN'),
+  validate(staffValidation.resetPassword),
+  staffController.resetPassword
+);
 
 export default router;
 
@@ -49,7 +64,7 @@ export default router;
  * /staffs:
  *   post:
  *     summary: Create a staff
- *     description: Only admins can create other staffs.
+ *     description: Only admin can create other staffs.
  *     tags: [Staffs]
  *     security:
  *       - bearerAuth: []
