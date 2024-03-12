@@ -31,6 +31,18 @@ const AppMessage = {
   commentUpdated: 'Comment information has been updated',
   commentDeleted: 'Comment is deleted',
 
+  // vote
+  voteCreated: 'Vote is Created',
+  voteUpdated: 'Vote information has been updated',
+  voteDeleted: 'Vote is deleted',
+
+  // report
+  reportCreated: 'Successfully Reported',
+  reportUpdated: 'Report information has been updated',
+  reportDeleted: 'Report is deleted',
+  reportApproved: 'Report is approved',
+  reportRejected: 'Report is rejected',
+
   // OTP
   sendOTP: 'Send OTP your phone',
   verifyOTP: 'Verify OTP is successful',

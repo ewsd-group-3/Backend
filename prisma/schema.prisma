@@ -27,9 +27,9 @@ model Staff {
   announcements     Announcement[]
   staffAnnouncement StaffAnnouncement[]
   loginHistory      LoginHistory[]
-  ideaBy            Report[]           @relation("ideaBy")
+  // ideaBy            Report[]           @relation("ideaBy")
   report            Report[]           @relation("reportBy")
-  approved          Report[]           @relation("approvedBy")
+  // approved          Report[]           @relation("approvedBy")
   lastLoginDate     DateTime?
   createdAt         DateTime            @default(now())
   updatedAt         DateTime            @default(now())@updatedAt
@@ -69,6 +69,7 @@ model Idea {
   title           String          
   description     String          @db.LongText
   isAnonymous     Boolean         @default(false)
+  isHidden        Boolean         @default(false)
   author          Staff           @relation(fields: [authorId], references: [id])
   authorId        Int
   semester        Semester        @relation(fields: [semesterId], references: [id])
@@ -207,15 +208,15 @@ model Report {
   id              Int           @id @default(autoincrement())
   reason          String
   isApproved      Boolean       @default(false)
-  approvedAt      DateTime      
+  approvedAt      DateTime?     
   idea            Idea          @relation(fields: [ideaId], references: [id])
   ideaId          Int  
-  ideaBy          Staff         @relation("ideaBy", fields: [ideaById], references: [id])
-  ideaById        Int
+  // ideaBy          Staff         @relation("ideaBy", fields: [ideaById], references: [id])
+  // ideaById        Int
   reportBy        Staff         @relation("reportBy", fields: [reportById], references: [id])
   reportById      Int
-  approvedBy      Staff         @relation("approvedBy", fields: [approvedById], references: [id])
-  approvedById    Int
+  // approvedBy      Staff         @relation("approvedBy", fields: [approvedById], references: [id])
+  approvedById    Int?
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @default(now()) @updatedAt
 }
