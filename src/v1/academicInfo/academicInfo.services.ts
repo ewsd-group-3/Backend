@@ -70,7 +70,7 @@ const queryAcademicInfos = async <Key extends keyof AcademicInfo>(
   academicInfos: Pick<AcademicInfo, Key>[];
 }> => {
   const page = options.page ?? 1;
-  const limit = options.limit ?? 10;
+  const limit = options.limit ?? 5;
   const sortBy = options.sortBy;
   const sortType = options.sortType ?? 'desc';
 

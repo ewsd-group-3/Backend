@@ -41,7 +41,7 @@ const queryReports = async <Key extends keyof Report>(
   reports: Pick<Report, Key>[];
 }> => {
   const page = options.page ?? 1;
-  const limit = options.limit ?? 10;
+  const limit = options.limit ?? 5;
   const sortBy = options.sortBy;
   const sortType = options.sortType ?? 'desc';
 
