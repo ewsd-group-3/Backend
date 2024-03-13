@@ -21,7 +21,7 @@ const login = catchAsync(async (req, res) => {
 
 const logout = catchAsync(async (req, res) => {
   await authService.logout(req.body.refreshToken);
-  successResponse(res, httpStatus.NO_CONTENT, AppMessage.loggedOut);
+  successResponse(res, httpStatus.OK, AppMessage.loggedOut);
 });
 
 const refreshTokens = catchAsync(async (req, res) => {
@@ -32,30 +32,30 @@ const refreshTokens = catchAsync(async (req, res) => {
 const changePassword = catchAsync(async (req, res) => {
   const staff = req.user as Staff;
 
-  successResponse(res, httpStatus.NO_CONTENT, 'Password Changed Successfully');
+  successResponse(res, httpStatus.OK, 'Password Changed Successfully');
 });
 
 const forgotPassword = catchAsync(async (req, res) => {
   const resetPasswordToken = await tokenService.generateResetPasswordToken(req.body.email);
   await emailService.sendResetPasswordEmail(req.body.email, resetPasswordToken);
-  successResponse(res, httpStatus.NO_CONTENT, 'Password Reset Email Sent Successfully');
+  successResponse(res, httpStatus.OK, 'Password Reset Email Sent Successfully');
 });
 
 const resetPassword = catchAsync(async (req, res) => {
   await authService.resetPassword(req.query.token as string, req.body.password);
-  successResponse(res, httpStatus.NO_CONTENT, 'Password Reset Successfully');
+  successResponse(res, httpStatus.OK, 'Password Reset Successfully');
 });
 
 const sendVerificationEmail = catchAsync(async (req, res) => {
   const staff = req.user as Staff;
   const verifyEmailToken = await tokenService.generateVerifyEmailToken(staff);
   await emailService.sendVerificationEmail(staff.email, verifyEmailToken);
-  successResponse(res, httpStatus.NO_CONTENT, 'Verification Sent to Email Successfully');
+  successResponse(res, httpStatus.OK, 'Verification Sent to Email Successfully');
 });
 
 const verifyEmail = catchAsync(async (req, res) => {
   await authService.verifyEmail(req.query.token as string);
-  successResponse(res, httpStatus.NO_CONTENT, 'Email Verified Successfully');
+  successResponse(res, httpStatus.OK, 'Email Verified Successfully');
 });
 
 export default {

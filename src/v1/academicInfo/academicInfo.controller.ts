@@ -64,7 +64,7 @@ const updateAcademicInfo = catchAsync(async (req, res) => {
 
 const deleteAcademicInfo = catchAsync(async (req, res) => {
   await academicInfoService.deleteAcademicInfoById(req.params.academicInfoId);
-  successResponse(res, httpStatus.NO_CONTENT, AppMessage.staffDeleted);
+  successResponse(res, httpStatus.OK, AppMessage.academicInfoDeleted);
 });
 
 export default {

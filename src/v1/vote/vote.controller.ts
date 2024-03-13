@@ -34,7 +34,7 @@ const getVote = catchAsync(async (req, res) => {
 
 const deleteVote = catchAsync(async (req, res) => {
   await voteService.deleteVoteById(req.params.voteId);
-  successResponse(res, httpStatus.NO_CONTENT, AppMessage.staffDeleted);
+  successResponse(res, httpStatus.OK, AppMessage.voteDeleted);
 });
 
 export default {

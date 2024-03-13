@@ -35,21 +35,21 @@ const updateReport = catchAsync(async (req, res) => {
 
 const deleteReport = catchAsync(async (req, res) => {
   await reportService.deleteReportById(req.params.reportId);
-  successResponse(res, httpStatus.NO_CONTENT, AppMessage.reportDeleted);
+  successResponse(res, httpStatus.OK, AppMessage.reportDeleted);
 });
 
 const approveReport = catchAsync(async (req, res) => {
   const { approvedById } = req.body;
 
   await reportService.approvedReportById(req.params.reportId, approvedById);
-  successResponse(res, httpStatus.NO_CONTENT, AppMessage.reportApproved);
+  successResponse(res, httpStatus.OK, AppMessage.reportApproved);
 });
 
 const rejectReport = catchAsync(async (req, res) => {
   const { approvedById } = req.body;
 
   await reportService.rejectedReportById(req.params.reportId, approvedById);
-  successResponse(res, httpStatus.NO_CONTENT, AppMessage.reportRejected);
+  successResponse(res, httpStatus.OK, AppMessage.reportRejected);
 });
 
 export default {

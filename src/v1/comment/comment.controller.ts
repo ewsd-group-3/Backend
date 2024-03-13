@@ -34,7 +34,7 @@ const updateComment = catchAsync(async (req, res) => {
 
 const deleteComment = catchAsync(async (req, res) => {
   await commentService.deleteCommentById(req.params.commentId);
-  successResponse(res, httpStatus.NO_CONTENT, AppMessage.staffDeleted);
+  successResponse(res, httpStatus.OK, AppMessage.commentDeleted);
 });
 
 export default {
