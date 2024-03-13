@@ -1,4 +1,4 @@
-import { Idea, IdeaCategory, IdeaDocument, Prisma } from '@prisma/client';
+import { Idea, IdeaCategory, IdeaDocument, Prisma, View } from '@prisma/client';
 import httpStatus from 'http-status';
 import prisma from '../../prisma';
 import ApiError from '../../utils/apiError';
@@ -160,6 +160,10 @@ const getIdeaDetailById = async <Key extends keyof Idea>(id: number): Promise<Pi
   });
 
   if (!idea) throw new ApiError(httpStatus.NOT_FOUND, 'Idea is not found');
+
+  // To Update View Count - Require StaffId
+  // await updateViewCount(staffId, 1);
+
   return idea as Promise<Pick<Idea, Key>>;
 };
 
@@ -225,7 +229,7 @@ const deleteIdeaById = async (IdeaId: number): Promise<Idea> => {
 };
 
 /**
- * Delete Idea by id
+ * Delete Idea Categories by Idea id
  * @param {ObjectId} IdeaId
  * @returns {Promise<Idea>}
  */
@@ -244,7 +248,7 @@ const deleteIdeaCategoriesByIdeaId = async (IdeaId: number): Promise<Idea> => {
   return idea;
 };
 /**
- * Delete Idea by id
+ * Delete Idea Document by idea id
  * @param {ObjectId} IdeaId
  * @returns {Promise<Idea>}
  */
@@ -263,6 +267,48 @@ const deleteIdeaDocumentsByIdeaId = async (IdeaId: number): Promise<Idea> => {
   return idea;
 };
 
+/**
+ * Update View Count
+ * @param {ObjectId} IdeaId
+ * @param {ObjectId} StaffId
+ * @returns {Promise<View>}
+ */
+const updateViewCount = async (IdeaId: number, StaffId: number): Promise<View> => {
+  let view = await prisma.view.findFirst({
+    where: { ideaId: IdeaId, staffId: StaffId }
+  });
+
+  if (!view) {
+    view = await prisma.view.create({ data: { ideaId: IdeaId, staffId: StaffId } });
+  }
+
+  return view as View;
+};
+
+/**
+ * Hide Idea by Report id
+ * @param {ObjectId} reportId
+ * @returns {Promise<Report>}
+ */
+const hideIdeaByReportId = async <Key extends keyof Idea>(
+  reportId: number
+): Promise<Pick<Idea, Key>> => {
+  const report = await prisma.report.findUnique({
+    where: { id: reportId }
+  });
+
+  if (!report) throw new ApiError(httpStatus.NOT_FOUND, 'Report is not found');
+
+  const idea = await getIdeaById(report.ideaId);
+  const updatedIdea = await prisma.idea.update({
+    where: { id: idea.id },
+    data: {
+      isHidden: true
+    }
+  });
+  return updatedIdea as Pick<Idea, Key>;
+};
+
 export default {
   createIdea,
   addIdeaCategories,
@@ -273,5 +319,7 @@ export default {
   updateIdeaById,
   deleteIdeaById,
   deleteIdeaCategoriesByIdeaId,
-  deleteIdeaDocumentsByIdeaId
+  deleteIdeaDocumentsByIdeaId,
+  updateViewCount,
+  hideIdeaByReportId
 };

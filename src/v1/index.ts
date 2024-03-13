@@ -10,6 +10,8 @@ import categoryRoute from './category/category.routes';
 import academicRoute from './academicInfo/academicInfo.routes';
 import announcementRoute from './announcement/announcement.routes';
 import commentRoute from './comment/comment.routes';
+import voteRoute from './vote/vote.routes';
+import reportRoute from './report/report.routes';
 import docsRoute from './docs.routes';
 
 const router = express.Router();
@@ -46,6 +48,14 @@ const defaultRoutes = [
   {
     path: '/comments',
     route: commentRoute
+  },
+  {
+    path: '/votes',
+    route: voteRoute
+  },
+  {
+    path: '/reports',
+    route: reportRoute
   }
 ];
 

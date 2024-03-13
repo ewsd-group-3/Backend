@@ -13,12 +13,12 @@ const createAcademicInfo = async (
   startDate: Date,
   endDate: Date
 ): Promise<AcademicInfo> => {
-  // if (await getAcademicInfoByName(name)) {
-  //   throw new ApiError(
-  //     httpStatus.BAD_REQUEST,
-  //     `AcademicInfo "${name}" already exists. Please Try Again!`
-  //   );
-  // }
+  if (await getAcademicInfoByName(name)) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      `AcademicInfo "${name}" already exists. Please Try Again!`
+    );
+  }
   return prisma.academicInfo.create({ data: { name, startDate, endDate } });
 };
 
@@ -61,22 +61,38 @@ const queryAcademicInfos = async <Key extends keyof AcademicInfo>(
     page?: number;
     sortBy?: string;
     sortType?: 'asc' | 'desc';
-  },
-  keys: Key[] = ['id', 'name', 'createdAt', 'updatedAt'] as Key[]
-): Promise<Pick<AcademicInfo, Key>[]> => {
+  }
+): Promise<{
+  page: number;
+  limit: number;
+  count: number;
+  totalPages: number;
+  academicInfos: Pick<AcademicInfo, Key>[];
+}> => {
   const page = options.page ?? 1;
   const limit = options.limit ?? 10;
   const sortBy = options.sortBy;
   const sortType = options.sortType ?? 'desc';
+
+  const count: number = await prisma.academicInfo.count({ where: filter });
+
   const academicInfos = await prisma.academicInfo.findMany({
     where: filter,
-    select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {}),
+    include: { semesters: true },
     skip: (page - 1) * limit,
     take: limit,
     orderBy: sortBy ? { [sortBy]: sortType } : undefined
   });
 
-  return academicInfos as Pick<AcademicInfo, Key>[];
+  const totalPages: number = Math.ceil(count / limit);
+
+  return {
+    page,
+    limit,
+    count,
+    totalPages,
+    academicInfos: academicInfos as Pick<AcademicInfo, Key>[]
+  };
 };
 
 /**
@@ -125,15 +141,15 @@ const getAcademicInfoWithSemesterById = async <Key extends keyof AcademicInfo>(
  * @param {Array<Key>} keys
  * @returns {Promise<Pick<AcademicInfo, Key> | null>}
  */
-// const getAcademicInfoByName = async <Key extends keyof AcademicInfo>(
-//   name: string,
-//   keys: Key[] = ['id', 'name', 'createdAt', 'updatedAt'] as Key[]
-// ): Promise<Pick<AcademicInfo, Key> | null> => {
-//   return prisma.academicInfo.findUnique({
-//     where: { name },
-//     select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {})
-//   }) as Promise<Pick<AcademicInfo, Key> | null>;
-// };
+const getAcademicInfoByName = async <Key extends keyof AcademicInfo>(
+  name: string,
+  keys: Key[] = ['id', 'name', 'createdAt', 'updatedAt'] as Key[]
+): Promise<Pick<AcademicInfo, Key> | null> => {
+  return prisma.academicInfo.findUnique({
+    where: { name },
+    select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {})
+  }) as Promise<Pick<AcademicInfo, Key> | null>;
+};
 
 /**
  * Update academicInfo by id

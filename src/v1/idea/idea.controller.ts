@@ -87,7 +87,7 @@ const updateIdea = catchAsync(async (req, res) => {
 
 const deleteIdea = catchAsync(async (req, res) => {
   await ideaService.deleteIdeaById(req.params.ideaId);
-  successResponse(res, httpStatus.NO_CONTENT, AppMessage.ideaDeleted);
+  successResponse(res, httpStatus.OK, AppMessage.ideaDeleted);
 });
 
 export default {

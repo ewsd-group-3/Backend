@@ -46,7 +46,7 @@ const updateDepartment = catchAsync(async (req, res) => {
 
 const deleteDepartment = catchAsync(async (req, res) => {
   await departmentService.deleteDepartmentById(req.params.departmentId);
-  successResponse(res, httpStatus.NO_CONTENT, AppMessage.staffDeleted);
+  successResponse(res, httpStatus.OK, AppMessage.departmentDeleted);
 });
 
 export default {
