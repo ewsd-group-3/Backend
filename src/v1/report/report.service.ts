@@ -33,7 +33,13 @@ const queryReports = async <Key extends keyof Report>(
     sortBy?: string;
     sortType?: 'asc' | 'desc';
   }
-): Promise<{ count: number; reports: Pick<Report, Key>[] }> => {
+): Promise<{
+  page: number;
+  limit: number;
+  count: number;
+  totalPages: number;
+  reports: Pick<Report, Key>[];
+}> => {
   const page = options.page ?? 1;
   const limit = options.limit ?? 10;
   const sortBy = options.sortBy;
@@ -52,7 +58,15 @@ const queryReports = async <Key extends keyof Report>(
     orderBy: sortBy ? { [sortBy]: sortType } : undefined
   });
 
-  return { count, reports: reports as Pick<Report, Key>[] };
+  const totalPages: number = Math.ceil(count / limit);
+
+  return {
+    page,
+    limit,
+    count,
+    totalPages,
+    reports: reports as Pick<Report, Key>[]
+  };
 };
 
 /**

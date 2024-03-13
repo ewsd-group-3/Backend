@@ -16,10 +16,9 @@ const createReport = catchAsync(async (req, res) => {
 const getReports = catchAsync(async (req, res) => {
   const filter = pick(req.query, ['name']);
   const options = pick(req.query, ['sortBy', 'sortType', 'limit', 'page']);
-  const { count, reports } = await reportService.queryReports(filter, options);
+  const result = await reportService.queryReports(filter, options);
   successResponse(res, httpStatus.OK, AppMessage.retrievedSuccessful, {
-    count,
-    reports
+    ...result
   });
 });
 
