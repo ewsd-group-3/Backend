@@ -29,8 +29,7 @@ const createAcademicInfo = catchAsync(async (req, res) => {
   });
 
   successResponse(res, httpStatus.CREATED, AppMessage.academicInfoCreated, {
-    academicInfo,
-    semesterAry
+    academicInfo
   });
 });
 
@@ -38,7 +37,9 @@ const getAcademicInfos = catchAsync(async (req, res) => {
   const filter = pick(req.query, ['name']);
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
   const result = await academicInfoService.queryAcademicInfos(filter, options);
-  successResponse(res, httpStatus.OK, AppMessage.retrievedSuccessful, result);
+  successResponse(res, httpStatus.OK, AppMessage.retrievedSuccessful, {
+    ...result
+  });
 });
 
 const getAcademicInfo = catchAsync(async (req, res) => {
