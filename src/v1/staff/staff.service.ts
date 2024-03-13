@@ -68,7 +68,7 @@ const queryStaffs = async <Key extends keyof Staff>(
   staffs: Pick<Staff, Key>[];
 }> => {
   const page = options.page ?? 1;
-  const limit = options.limit ?? 10;
+  const limit = options.limit ?? 5;
   const sortBy = options.sortBy;
   const sortType = options.sortType ?? 'desc';
 
