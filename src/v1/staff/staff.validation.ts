@@ -40,7 +40,9 @@ const updateStaff = {
     .keys({
       email: Joi.string().email(),
       password: Joi.string().custom(password),
-      name: Joi.string()
+      name: Joi.string(),
+      role: Joi.string(),
+      departmentId: Joi.number()
     })
     .min(1)
 };

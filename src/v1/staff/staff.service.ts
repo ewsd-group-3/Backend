@@ -135,7 +135,11 @@ const updateStaffById = async <Key extends keyof Staff>(
   // keys: Key[] = ['id', 'email', 'name', 'role'] as Key[]
 ): Promise<Pick<Staff, Key>> => {
   const staff = await getStaffById(staffId);
-  if (updateBody.email && (await getStaffByEmail(updateBody.email as string))) {
+  if (
+    updateBody.email &&
+    staff.email !== updateBody.email &&
+    (await getStaffByEmail(updateBody.email as string))
+  ) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
   }
   const updatedStaff = await prisma.staff.update({

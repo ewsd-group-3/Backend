@@ -123,7 +123,15 @@ const getAcademicInfoById = async <Key extends keyof AcademicInfo>(
  */
 const getAcademicInfoWithSemesterById = async <Key extends keyof AcademicInfo>(
   id: number,
-  keys: Key[] = ['id', 'name', 'createdAt', 'updatedAt', 'semesters'] as Key[]
+  keys: Key[] = [
+    'id',
+    'name',
+    'startDate',
+    'endDate',
+    'createdAt',
+    'updatedAt',
+    'semesters'
+  ] as Key[]
 ): Promise<Pick<AcademicInfo, Key>> => {
   const academicInfo = await prisma.academicInfo.findUnique({
     where: { id },
