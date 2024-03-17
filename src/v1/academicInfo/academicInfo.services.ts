@@ -1,7 +1,10 @@
-import { AcademicInfo, Role, Prisma, Semester } from '@prisma/client';
+import { AcademicInfo, Prisma, Semester, Idea } from '@prisma/client';
 import httpStatus from 'http-status';
 import prisma from '../../prisma';
 import ApiError from '../../utils/apiError';
+import { createExcelFile, formatWorkSheet, writeDataToSheet } from '../../utils/excel';
+import { Buffer } from 'buffer';
+import { Readable } from 'stream';
 
 /**
  * Create a academicInfo
@@ -229,6 +232,34 @@ const deleteAcademicInfoById = async (academicInfoId: number): Promise<AcademicI
   return academicInfo;
 };
 
+const createExcelStream = async (academicInfoId: number) => {
+  const academicInfo = await getAcademicInfoById(Number(academicInfoId));
+  const semesters = await prisma.semester.findMany({ where: { academicInfoId: academicInfo.id } });
+  const excelFile = createExcelFile();
+
+  await Promise.all(
+    semesters.map(async (semester) => {
+      const ideas = await prisma.idea.findMany({
+        where: { semesterId: semester.id },
+        include: { semester: true }
+      });
+
+      const worksheet = excelFile.addWorksheet(`${semester.name} Ideas`);
+
+      await writeDataToSheet(worksheet, ideas);
+      await formatWorkSheet(worksheet);
+    })
+  );
+
+  // Generate Excel file in memory
+  const excelBuffer: Buffer = Buffer.from(await excelFile.xlsx.writeBuffer());
+
+  // Create a readable stream from the Excel buffer
+  const excelStream = Readable.from(excelBuffer);
+
+  return excelStream;
+};
+
 export default {
   createAcademicInfo,
   createSemester,
@@ -237,5 +268,6 @@ export default {
   getAcademicInfoWithSemesterById,
   updateAcademicInfoById,
   updateSemesterById,
-  deleteAcademicInfoById
+  deleteAcademicInfoById,
+  createExcelStream
 };

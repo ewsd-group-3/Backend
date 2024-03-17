@@ -10,9 +10,9 @@ import exclude from '../../utils/exclude';
 
 const createAnnouncement = catchAsync(async (req, res) => {
   const announcer = req.staff;
-  const { subject, content, type, staffIds } = req.body;
+  const { announcerId, subject, content, type, staffIds } = req.body;
   const announcement = await announcementService.createAnnouncement(
-    announcer,
+    announcerId,
     subject,
     content,
     type,

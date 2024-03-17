@@ -14,7 +14,7 @@ router
     academicInfoController.createAcademicInfo
   )
   .get(
-    // auth('ADMIN'),
+    // auth('ADMIN', 'QA_MANAGER'),
     validate(academicInfoValidation.getAcademicInfos),
     academicInfoController.getAcademicInfos
   );
@@ -36,5 +36,10 @@ router
     validate(academicInfoValidation.deleteAcademicInfo),
     academicInfoController.deleteAcademicInfo
   );
+
+router.route('/download/:academicInfoId').post(
+  // auth('QA_MANAGER'),
+  academicInfoController.downloadIdeaZipData
+);
 
 export default router;
