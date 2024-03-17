@@ -50,6 +50,7 @@ const AppMessage = {
 
   // Download
   downloaded: 'Downloaded Successfully',
+  profileChanged: 'Profile Picture is changed successfully',
 
   // OTP
   sendOTP: 'Send OTP your phone',

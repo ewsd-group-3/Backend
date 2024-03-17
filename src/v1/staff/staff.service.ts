@@ -281,6 +281,23 @@ const findQACoordinatorStaff = async <Key extends keyof Staff>(
   return qa_coordinatorStaff as Promise<Pick<Staff, Key> | null>;
 };
 
+const uploadProfile = async <Key extends keyof Staff>(
+  staffId: number,
+  profile: object
+): Promise<Pick<Staff, Key>> => {
+  const staff = await getStaffById(Number(staffId));
+
+  const updatedStaff = await prisma.staff.update({
+    where: { id: staff.id },
+    data: { profile: profile },
+    include: {
+      department: {
+        select: { id: true, name: true }
+      }
+    }
+  });
+  return updatedStaff as Pick<Staff, Key>;
+};
 export default {
   createStaff,
   queryStaffs,
@@ -290,5 +307,6 @@ export default {
   deleteStaffById,
   toggleActive,
   resetPassword,
-  changePassword
+  changePassword,
+  uploadProfile
 };

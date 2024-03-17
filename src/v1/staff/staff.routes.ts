@@ -19,6 +19,10 @@ router
     staffController.getStaffs
   );
 
+router
+  .route('/upload-profile')
+  .patch(auth('STAFF'), validate(staffValidation.uploadProfile), staffController.uploadProfile);
+
 router.route('/change-password').patch(
   // auth('STAFF'),
   validate(staffValidation.changePassword),
