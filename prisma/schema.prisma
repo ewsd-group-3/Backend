@@ -19,6 +19,7 @@ model Staff {
   isActive          Boolean             @default(true)
   department        Department          @relation(fields: [departmentId], references: [id])
   departmentId      Int
+  profile           Json?
   ideas             Idea[]
   views             View[]
   comments          Comment[]
