@@ -48,6 +48,9 @@ const AppMessage = {
   reportApproved: 'Report is approved',
   reportRejected: 'Report is rejected',
 
+  // Download
+  downloaded: 'Downloaded Successfully',
+
   // OTP
   sendOTP: 'Send OTP your phone',
   verifyOTP: 'Verify OTP is successful',

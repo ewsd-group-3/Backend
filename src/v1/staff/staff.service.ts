@@ -27,6 +27,15 @@ const createStaff = async (
     throw new ApiError(httpStatus.BAD_REQUEST, `Cannot create two active ${role}s.`);
   }
 
+  if (role === 'QA_COORDINATOR') {
+    const qa_coordinator = await findQACoordinatorStaff(departmentId);
+    if (qa_coordinator)
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        `Cannot create two active QA Coordinators in one Department!`
+      );
+  }
+
   return prisma.staff.create({
     data: {
       email,
@@ -173,7 +182,28 @@ const toggleActive = async <Key extends keyof Staff>(
   staffId: number,
   keys: Key[] = ['id', 'email', 'name', 'role'] as Key[]
 ): Promise<Pick<Staff, Key>> => {
-  const staff = await getStaffById(staffId);
+  const staff = await getStaffById(Number(staffId));
+
+  if (staff.isActive === false) {
+    const adminStaff = await getAdminStaff();
+    const qaMgrStaff = await getQAManagerStaff();
+
+    if ((staff.role === 'ADMIN' && adminStaff) || (staff.role === 'QA_MANAGER' && qaMgrStaff)) {
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        `Cannot have two active ${staff.role}s in the System.`
+      );
+    }
+
+    if (staff.role === 'QA_COORDINATOR') {
+      const qa_coordinator = await findQACoordinatorStaff(staff.departmentId);
+      if (qa_coordinator)
+        throw new ApiError(
+          httpStatus.BAD_REQUEST,
+          `Cannot have two active QA Coordinators in one Department!`
+        );
+    }
+  }
 
   const updatedStaff = await prisma.staff.update({
     where: { id: staff.id },
@@ -238,6 +268,17 @@ const getQAManagerStaff = async <Key extends keyof Staff>(
     select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {})
   });
   return qaMgrStaff as Promise<Pick<Staff, Key> | null>;
+};
+
+const findQACoordinatorStaff = async <Key extends keyof Staff>(
+  departmentId: number,
+  keys: Key[] = ['id', 'email', 'name', 'password', 'role', 'createdAt', 'updatedAt'] as Key[]
+): Promise<Pick<Staff, Key> | null> => {
+  const qa_coordinatorStaff = await prisma.staff.findFirst({
+    where: { departmentId, isActive: true, role: 'QA_COORDINATOR' },
+    select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {})
+  });
+  return qa_coordinatorStaff as Promise<Pick<Staff, Key> | null>;
 };
 
 export default {

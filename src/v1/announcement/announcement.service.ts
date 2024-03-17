@@ -11,14 +11,15 @@ import { AuthStaff } from '../../types/response';
  * @returns {Promise<Announcement>}
  */
 const createAnnouncement = async (
-  announcer: AuthStaff,
+  // announcer: AuthStaff,
+  announcerId: number,
   subject: string,
   content: string,
   type: AudienceType,
   staffIds: number[]
 ): Promise<Announcement> => {
   const staff = await prisma.staff.findUnique({
-    where: { id: announcer.id }
+    where: { id: announcerId }
   });
 
   let staffs: Staff[] = [];
@@ -35,7 +36,7 @@ const createAnnouncement = async (
 
   const announcement = await prisma.announcement.create({
     data: {
-      announcerId: announcer.id,
+      announcerId: announcerId,
       subject,
       content,
       type
