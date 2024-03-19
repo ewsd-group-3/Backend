@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "cross-env NODE_ENV=development nodemon --inspect --config nodemon.json src/index.ts",
     "start": "nodemon --inspect src/index.ts",
-    "build": "npx tsc && tsc -p tsconfig.json"
+    "build": "npx prisma db push && npx tsc && tsc -p tsconfig.json"
   },
   "keywords": [],
   "author": "",
