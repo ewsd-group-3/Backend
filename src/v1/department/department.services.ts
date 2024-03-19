@@ -53,10 +53,14 @@ const queryDepartments = async <Key extends keyof Department>(
 
   const departments = await prisma.department.findMany({
     where: filter,
-    select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {}),
     skip: (page - 1) * limit,
     take: limit,
-    orderBy: sortBy ? { [sortBy]: sortType } : undefined
+    orderBy: sortBy ? { [sortBy]: sortType } : undefined,
+    include: {
+      _count: {
+        select: { staffs: true }
+      }
+    }
   });
 
   return { page, limit, count, totalPages, departments: departments as Pick<Department, Key>[] };
