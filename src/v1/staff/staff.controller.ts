@@ -81,7 +81,6 @@ const deleteStaff = catchAsync(async (req, res) => {
 const uploadProfile = catchAsync(async (req, res) => {
   const staff = req.staff;
   const { profile } = req.body;
-  console.log(staff);
   const updatedStaff = await staffService.uploadProfile(Number(staff?.id), profile);
   successResponse(res, httpStatus.OK, AppMessage.profileChanged, {
     staff: exclude(updatedStaff, ['password'])

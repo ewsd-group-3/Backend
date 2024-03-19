@@ -66,9 +66,9 @@ const queryCategories = async <Key extends keyof Category>(
 const getCategoryById = async <Key extends keyof Category>(
   id: number
 ): Promise<Pick<Category, Key>> => {
-  const category = prisma.category.findUnique({ where: { id } });
+  const category = await prisma.category.findUnique({ where: { id } });
   if (!category) throw new ApiError(httpStatus.NOT_FOUND, 'Category is not found');
-  return category as Promise<Pick<Category, Key>>;
+  return category;
 };
 
 /**
@@ -117,7 +117,13 @@ const updateCategoryById = async <Key extends keyof Category>(
  */
 const deleteCategoryById = async (CategoryId: number): Promise<Category> => {
   const category = await getCategoryById(CategoryId);
-  // TODO: Search in Idea Table if category is used or not
+  const ideaCategories = await prisma.ideaCategory.findMany({ where: { categoryId: category.id } });
+  if (ideaCategories.length > 0) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      `Cannot be deleted! Ideas are created with Category ${category.name}`
+    );
+  }
   await prisma.category.delete({ where: { id: category.id } });
   return category;
 };
