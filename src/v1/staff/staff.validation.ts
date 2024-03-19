@@ -40,7 +40,9 @@ const updateStaff = {
     .keys({
       email: Joi.string().email(),
       password: Joi.string().custom(password),
-      name: Joi.string()
+      name: Joi.string(),
+      role: Joi.string(),
+      departmentId: Joi.number()
     })
     .min(1)
 };
@@ -52,17 +54,28 @@ const deleteStaff = {
 };
 
 const changePassword = {
-  body: Joi.object()
-    .keys({
-      oldPassword: Joi.string().required(),
-      newPassword: Joi.string().custom(password).required()
-    })
-    .min(1)
+  body: Joi.object().keys({
+    oldPassword: Joi.string().required(),
+    newPassword: Joi.string().custom(password).required()
+  })
 };
 
 const resetPassword = {
   params: Joi.object().keys({
     staffId: Joi.number().integer()
+  })
+};
+
+const uploadProfile = {
+  body: Joi.object().keys({
+    profile: Joi.object()
+      .keys({
+        name: Joi.string().required(),
+        documenttype: Joi.string().required(),
+        documentDownloadUrl: Joi.string().required(),
+        documentDeleteUrl: Joi.string().required()
+      })
+      .required()
   })
 };
 
@@ -73,5 +86,6 @@ export default {
   updateStaff,
   deleteStaff,
   changePassword,
-  resetPassword
+  resetPassword,
+  uploadProfile
 };

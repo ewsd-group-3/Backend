@@ -3,6 +3,7 @@ import { AudienceType } from '@prisma/client';
 
 const createAnnouncement = {
   body: Joi.object().keys({
+    announcerId: Joi.number(), // Will Remove Later
     subject: Joi.string().required(),
     content: Joi.string().required(),
     type: Joi.string().required().valid(AudienceType.ALL, AudienceType.SPECIFIC),

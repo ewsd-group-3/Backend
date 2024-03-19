@@ -10,6 +10,8 @@ import successResponse from '../../utils/successResponse';
 import pick from '../../utils/pick';
 import { Semester } from '@prisma/client';
 
+import archiver from 'archiver';
+
 const createAcademicInfo = catchAsync(async (req, res) => {
   const { name, startDate, endDate, semesters } = req.body;
   const academicInfo = await academicInfoService.createAcademicInfo(name, startDate, endDate);
@@ -111,10 +113,40 @@ const deleteAcademicInfo = catchAsync(async (req, res) => {
   successResponse(res, httpStatus.OK, AppMessage.academicInfoDeleted);
 });
 
+const downloadIdeaZipData = catchAsync(async (req, res) => {
+  // Set response headers
+  const zipFileName = 'Academic_Year_Ideas.zip';
+  res.setHeader('Content-Type', 'application/zip');
+  res.setHeader('Content-Disposition', `attachment; filename=${zipFileName}`);
+
+  // Create a zip archive
+  const archive = archiver('zip', {
+    zlib: { level: 9 } // Compression level
+  });
+
+  // Handle archive errors
+  archive.on('error', (err) => {
+    console.error('Error during archiving:', err);
+    res.status(500).send(`Error during archiving: ${err}`);
+  });
+
+  archive.pipe(res);
+
+  // Get the Excel stream
+  const excelStream = await academicInfoService.createExcelStream(req.params.academicInfoId);
+
+  // Append the Excel stream to the archive
+  archive.append(excelStream, { name: 'ideas.xlsx' });
+
+  // Finalize the archive
+  archive.finalize();
+});
+
 export default {
   createAcademicInfo,
   getAcademicInfos,
   getAcademicInfo,
   updateAcademicInfo,
-  deleteAcademicInfo
+  deleteAcademicInfo,
+  downloadIdeaZipData
 };
