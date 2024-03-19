@@ -225,10 +225,10 @@ model Report {
 }
 
 enum Role {
-  STAFF
   ADMIN
-  QA_MANAGER
   QA_COORDINATOR
+  QA_MANAGER
+  STAFF
 }
 
 enum TokenType {
@@ -244,14 +244,14 @@ enum AudienceType {
 }
 
 enum Status {
-  PENDING
   ACTIVE
   DONE
   FAILED
+  PENDING
 }
 
 enum StaffAnnouncementStatus {
   PENDING
-  SUCCESS
   FAIL
+  SUCCESS
 }

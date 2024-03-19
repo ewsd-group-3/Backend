@@ -9,7 +9,7 @@ import catchAsync from '../../utils/catchAsync';
 import successResponse from '../../utils/successResponse';
 import pick from '../../utils/pick';
 import { Semester } from '@prisma/client';
-import { stat } from 'fs';
+
 import archiver from 'archiver';
 
 const createAcademicInfo = catchAsync(async (req, res) => {
@@ -37,10 +37,20 @@ const createAcademicInfo = catchAsync(async (req, res) => {
 
 const getAcademicInfos = catchAsync(async (req, res) => {
   const filter = pick(req.query, ['name']);
-  const options = pick(req.query, ['sortBy', 'limit', 'page']);
+  const options = pick(req.query, ['sortBy', 'sortType', 'limit', 'page']);
+
+  const additionalAttributes: any[] = ['status'];
+  let additionalSortBy = null;
+
+  if (options.sortBy && additionalAttributes.includes(options.sortBy)) {
+    additionalSortBy = options.sortBy;
+    options.sortBy = null;
+  }
+
   const { page, limit, count, totalPages, academicInfos } =
     await academicInfoService.queryAcademicInfos(filter, options);
-  successResponse(res, httpStatus.OK, AppMessage.retrievedSuccessful, {
+
+  let response = {
     page,
     limit,
     count,
@@ -49,7 +59,19 @@ const getAcademicInfos = catchAsync(async (req, res) => {
       ...academicInfo,
       status: getAcademicStatus(academicInfo.startDate, academicInfo.endDate)
     }))
-  });
+  };
+
+  if (additionalSortBy && additionalSortBy == 'status') {
+    response.academicInfos = response.academicInfos.sort((a, b) => {
+      if (options.sortType == 'desc') {
+        return b.status.localeCompare(a.status);
+      } else {
+        return a.status.localeCompare(b.status);
+      }
+    });
+  }
+
+  successResponse(res, httpStatus.OK, AppMessage.retrievedSuccessful, response);
 });
 
 const getAcademicStatus = (startDate: Date, endDate: Date) => {
