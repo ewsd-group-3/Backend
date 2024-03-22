@@ -97,9 +97,17 @@ const queryIdeas = async <Key extends keyof Idea>(
           category: true
         }
       },
-      author: true,
+      author: {
+        include: {
+          department: true
+        }
+      },
       votes: true,
-      comments: true,
+      comments: {
+        include: {
+          staff: true
+        }
+      },
       views: true
     },
     skip: (page - 1) * limit,
