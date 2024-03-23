@@ -89,7 +89,7 @@ const queryIdeas = async <Key extends keyof Idea>(
   const totalPages: number = Math.ceil(count / limit);
 
   const ideas = await prisma.idea.findMany({
-    where: filter,
+    // where: filter,
     // select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {}),
     include: {
       ideaCategories: {
@@ -97,17 +97,9 @@ const queryIdeas = async <Key extends keyof Idea>(
           category: true
         }
       },
-      author: {
-        include: {
-          department: true
-        }
-      },
+      author: true,
       votes: true,
-      comments: {
-        include: {
-          staff: true
-        }
-      },
+      comments: true,
       views: true
     },
     skip: (page - 1) * limit,

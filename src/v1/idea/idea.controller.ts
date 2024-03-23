@@ -7,7 +7,7 @@ import ApiError from '../../utils/apiError';
 import catchAsync from '../../utils/catchAsync';
 import successResponse from '../../utils/successResponse';
 import pick from '../../utils/pick';
-import { IdeaDocument } from '@prisma/client';
+import { Idea, IdeaDocument, Vote } from '@prisma/client';
 
 const createIdea = catchAsync(async (req, res) => {
   const { title, description, authorId, semesterId, isAnonymous, categoryIds, documents } =
@@ -44,15 +44,87 @@ const createIdea = catchAsync(async (req, res) => {
 const getIdeas = catchAsync(async (req, res) => {
   const filter = pick(req.query, ['name']);
   const options = pick(req.query, ['sortBy', 'sortType', 'limit', 'page']);
+
+  const additionalAttributes: any[] = [
+    'totalViewCount',
+    'voteResult',
+    'totalComments',
+    'totalLikes',
+    'totalDisLikes'
+  ];
+  let additionalSortBy = null;
+
+  if (options.sortBy && additionalAttributes.includes(options.sortBy)) {
+    additionalSortBy = options.sortBy;
+    options.sortBy = null;
+  }
+
   const { page, limit, count, totalPages, ideas } = await ideaService.queryIdeas(filter, options);
-  successResponse(res, httpStatus.OK, AppMessage.retrievedSuccessful, {
+  let response = {
     page,
     limit,
     count,
     totalPages,
-    ideas
-  });
+    ideas: ideas.map((idea) => ({
+      ...idea,
+      ...calculateCount(idea)
+    }))
+  };
+
+  if (additionalSortBy && additionalSortBy == 'totalViewCount') {
+    response.ideas = response.ideas.sort((a, b) => {
+      if (options.sortType == 'desc') {
+        return b.totalViewCount.localeCompare(a.totalViewCount);
+      } else {
+        return a.totalViewCount.localeCompare(b.totalViewCount);
+      }
+    });
+  } else if (additionalSortBy && additionalSortBy == 'voteResult') {
+    response.ideas = response.ideas.sort((a, b) => {
+      if (options.sortType == 'desc') {
+        return b.voteResult.localeCompare(a.voteResult);
+      } else {
+        return a.voteResult.localeCompare(b.voteResult);
+      }
+    });
+  } else if (additionalSortBy && additionalSortBy == 'totalComments') {
+    response.ideas = response.ideas.sort((a, b) => {
+      if (options.sortType == 'desc') {
+        return b.totalComments.localeCompare(a.totalComments);
+      } else {
+        return a.totalComments.localeCompare(b.totalComments);
+      }
+    });
+  } else if (additionalSortBy && additionalSortBy == 'totalLikes') {
+    response.ideas = response.ideas.sort((a, b) => {
+      if (options.sortType == 'desc') {
+        return b.totalLikes.localeCompare(a.totalLikes);
+      } else {
+        return a.totalLikes.localeCompare(b.totalLikes);
+      }
+    });
+  } else if (additionalSortBy && additionalSortBy == 'totalDisLikes') {
+    response.ideas = response.ideas.sort((a, b) => {
+      if (options.sortType == 'desc') {
+        return b.totalDisLikes.localeCompare(a.totalDisLikes);
+      } else {
+        return a.totalDisLikes.localeCompare(b.totalDisLikes);
+      }
+    });
+  }
+
+  successResponse(res, httpStatus.OK, AppMessage.retrievedSuccessful, response);
 });
+
+const calculateCount = (idea: any) => {
+  return {
+    totalLikes: idea.votes?.filter((x: Vote) => x.isThumbUp).length,
+    totalDisLikes: idea.votes?.filter((x: Vote) => !x.isThumbUp).length,
+    voteResult: idea.votes?.reduce((acc: number, v: Vote) => acc + (v.isThumbUp ? 1 : -1), 0),
+    totalComments: idea.comments.length,
+    totalViewCount: idea.views.length
+  };
+};
 
 const getIdea = catchAsync(async (req, res) => {
   const idea = await ideaService.getIdeaDetailById(req.params.ideaId);
