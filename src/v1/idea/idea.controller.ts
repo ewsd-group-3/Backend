@@ -162,10 +162,16 @@ const deleteIdea = catchAsync(async (req, res) => {
   successResponse(res, httpStatus.OK, AppMessage.ideaDeleted);
 });
 
+const hideIdea = catchAsync(async (req, res) => {
+  await ideaService.hideIdeaById(req.params.ideaId);
+  successResponse(res, httpStatus.OK, AppMessage.ideaHidden);
+});
+
 export default {
   createIdea,
   getIdeas,
   getIdea,
   updateIdea,
-  deleteIdea
+  deleteIdea,
+  hideIdea
 };

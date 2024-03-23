@@ -311,6 +311,25 @@ const hideIdeaByReportId = async <Key extends keyof Idea>(
   return updatedIdea as Pick<Idea, Key>;
 };
 
+/**
+ * Hide Idea by id
+ * @param {ObjectId} ideaId
+ * @returns {Promise<Report>}
+ */
+const hideIdeaById = async <Key extends keyof Idea>(ideaId: number): Promise<Pick<Idea, Key>> => {
+  const idea = await getIdeaById(ideaId);
+
+  if (!idea) throw new ApiError(httpStatus.NOT_FOUND, 'Idea is not found');
+
+  const updatedIdea = await prisma.idea.update({
+    where: { id: idea.id },
+    data: {
+      isHidden: true
+    }
+  });
+  return updatedIdea as Pick<Idea, Key>;
+};
+
 export default {
   createIdea,
   addIdeaCategories,
@@ -323,5 +342,6 @@ export default {
   deleteIdeaCategoriesByIdeaId,
   deleteIdeaDocumentsByIdeaId,
   updateViewCount,
-  hideIdeaByReportId
+  hideIdeaByReportId,
+  hideIdeaById
 };
