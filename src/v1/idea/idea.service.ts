@@ -149,16 +149,18 @@ const getIdeaDetailById = async <Key extends keyof Idea>(id: number): Promise<Pi
         }
       },
       author: {
-        select: {
-          id: true,
-          name: true,
-          email: true
+        include: {
+          department: true
         }
       },
       semester: true,
       comments: {
         include: {
-          staff: true
+          staff: {
+            include: {
+              department: true
+            }
+          }
         }
       },
       votes: true,
