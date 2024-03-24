@@ -12,6 +12,7 @@ import announcementRoute from './announcement/announcement.routes';
 import commentRoute from './comment/comment.routes';
 import voteRoute from './vote/vote.routes';
 import reportRoute from './report/report.routes';
+import statisticalReportRoute from './statisticalReport/statisticalReport.routes';
 import docsRoute from './docs.routes';
 
 const router = express.Router();
@@ -56,6 +57,10 @@ const defaultRoutes = [
   {
     path: '/reports',
     route: reportRoute
+  },
+  {
+    path: '/statistical-reports',
+    route: statisticalReportRoute
   }
 ];
 
