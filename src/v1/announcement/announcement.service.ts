@@ -94,7 +94,20 @@ const queryAnnouncements = async <Key extends keyof Announcement>(
 
   const announcements = await prisma.announcement.findMany({
     where: filter,
-    include: { audiences: {} },
+    include: {
+      audiences: {
+        select: {
+          id: true,
+          staffId: true,
+          staff: true,
+          department: true,
+          departmentId: true,
+          announcementId: true,
+          createdAt: true,
+          updatedAt: true
+        }
+      }
+    },
     skip: (page - 1) * limit,
     take: limit,
     orderBy: sortBy ? { [sortBy]: sortType } : undefined
@@ -120,7 +133,20 @@ const getAnnouncementById = async <Key extends keyof Announcement>(
 ): Promise<Pick<Announcement, Key>> => {
   const announcement = await prisma.announcement.findUnique({
     where: { id },
-    include: { audiences: {} }
+    include: {
+      audiences: {
+        select: {
+          id: true,
+          staffId: true,
+          staff: true,
+          department: true,
+          departmentId: true,
+          announcementId: true,
+          createdAt: true,
+          updatedAt: true
+        }
+      }
+    }
   });
   if (!announcement) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Announcement is not found');
