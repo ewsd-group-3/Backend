@@ -209,50 +209,54 @@ const getCategoryPercentage = async (ideaIds: number[]) => {
       (ideaCategory) => ideaCategory.categoryId === category.id
     ).length;
     const percentage = (categoryCount / ideaIds.length) * 100;
-    return { category, percentage: percentage ? percentage : 0 };
+    return { category, percentage: percentage ? Number(percentage.toFixed(2)) : 0 };
   });
 
   return categoryPercentage;
 };
 
-const getContributorPercentage = async (ideaIds: number[]) => {
-  const departments = await prisma.department.findMany();
-
-  const contributorsPercentage = departments.map(async (department) => {
-    const staffs = await prisma.staff.findMany({ where: { departmentId: department.id } });
-    const staffIds = staffs.map((staff) => staff.id);
-    const staffCount = await prisma.staff.count({ where: { departmentId: department.id } });
-
-    const staffIdeaCount = await prisma.staff.count({
-      where: {
-        id: { in: staffIds },
-        ideas: { some: { id: { in: ideaIds } } }
-      }
-    });
-    const percentage = (staffIdeaCount / staffCount) * 100;
-    return { department, percentage };
-  });
-
-  return contributorsPercentage;
-};
-
 const getDepartmentPercentage = async (ideaIds: number[]) => {
   const departments = await prisma.department.findMany();
 
-  const departmentPercentage = departments.map(async (department) => {
-    const staffs = await prisma.staff.findMany({ where: { departmentId: department.id } });
-    const staffIds = staffs.map((staff) => staff.id);
+  const departmentPercentage = await Promise.all(
+    departments.map(async (department) => {
+      const staffs = await prisma.staff.findMany({ where: { departmentId: department.id } });
+      const staffIds = staffs.map((staff) => staff.id);
 
-    const departmentIdeaCount = await prisma.idea.count({
-      where: {
-        authorId: { in: staffIds }
-      }
-    });
-    const percentage = (departmentIdeaCount / ideaIds.length) * 100;
-    return { department, percentage };
-  });
+      const departmentIdeaCount = await prisma.idea.count({
+        where: {
+          authorId: { in: staffIds },
+          id: { in: ideaIds }
+        }
+      });
+      const percentage = ideaIds.length > 0 ? (departmentIdeaCount / ideaIds.length) * 100 : 0;
+      return { department, percentage: Number(percentage.toFixed(2)) };
+    })
+  );
 
   return departmentPercentage;
+};
+
+const getContributorPercentage = async (ideaIds: number[]) => {
+  const departments = await prisma.department.findMany();
+
+  const contributorsPercentage = await Promise.all(
+    departments.map(async (department) => {
+      const staffs = await prisma.staff.findMany({ where: { departmentId: department.id } });
+      const staffIds = staffs.map((staff) => staff.id);
+      const staffCount = await prisma.staff.count({ where: { id: { in: staffIds } } });
+      const staffIdeaCount = await prisma.staff.count({
+        where: {
+          id: { in: staffIds },
+          ideas: { some: { id: { in: ideaIds } } }
+        }
+      });
+      const percentage = staffCount > 0 ? (staffIdeaCount / staffCount) * 100 : 0;
+      return { department, percentage: Number(percentage.toFixed(2)) };
+    })
+  );
+
+  return contributorsPercentage;
 };
 
 export default {
