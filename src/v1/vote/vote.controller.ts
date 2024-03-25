@@ -8,13 +8,26 @@ import voteService from './vote.services';
 import catchAsync from '../../utils/catchAsync';
 import successResponse from '../../utils/successResponse';
 import pick from '../../utils/pick';
+import ApiError from '../../utils/apiError';
 
 const giveVote = catchAsync(async (req, res) => {
   const staff = req.staff ?? { id: 1 };
 
-  const { isThumbUp, ideaId } = req.body;
-  const vote = await voteService.createOrUpdateVote(isThumbUp, staff.id, ideaId);
-  successResponse(res, httpStatus.OK, AppMessage.voteCreated, { vote });
+  const { voteStatus, ideaId }: { voteStatus: string; ideaId: number } = req.body;
+
+  let vote = null;
+
+  if (voteStatus.toLowerCase() == 'like') {
+    vote = await voteService.createOrUpdateVote(true, staff.id, ideaId);
+  } else if (voteStatus.toLowerCase() == 'dislike') {
+    vote = await voteService.createOrUpdateVote(false, staff.id, ideaId);
+  } else if (voteStatus.toLowerCase() == 'unlike' || voteStatus.toLowerCase() == 'undislike') {
+    vote = await voteService.deleteVoteByStaffIdAndIdeaId(staff.id, ideaId);
+  } else {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid vote status');
+  }
+
+  successResponse(res, httpStatus.OK, `Staff ${staff.id} ${voteStatus} the idea`, { vote });
 });
 
 const getVotes = catchAsync(async (req, res) => {

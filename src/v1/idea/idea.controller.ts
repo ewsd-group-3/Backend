@@ -57,6 +57,8 @@ const createIdea = catchAsync(async (req, res) => {
 });
 
 const getIdeas = catchAsync(async (req, res) => {
+  const currentStaff = req.staff ?? { id: 1 };
+
   const filter = pick(req.query, ['name']);
   const options = pick(req.query, ['sortBy', 'sortType', 'limit', 'page']);
 
@@ -82,7 +84,8 @@ const getIdeas = catchAsync(async (req, res) => {
     totalPages,
     ideas: ideas.map((idea) => ({
       ...idea,
-      ...calculateCount(idea)
+      ...calculateCount(idea),
+      likeStatus: getLikeStatus(idea, currentStaff.id)
     }))
   };
 
@@ -141,14 +144,28 @@ const calculateCount = (idea: any) => {
   };
 };
 
+const getLikeStatus = (idea: any, staffId: number): string => {
+  const vote = idea.votes?.find((x: Vote) => x.staffId == staffId);
+  if (vote) {
+    return vote.isThumbUp ? 'like' : 'dislike';
+  }
+  return 'none';
+};
+
 const getIdea = catchAsync(async (req, res) => {
+  const currentStaff = req.staff ?? { id: 1 };
+
   const idea = await ideaService.getIdeaDetailById(req.params.ideaId);
   if (!idea) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Id is not found');
   }
+
+  await ideaService.incrementViewCount(req.params.ideaId, currentStaff.id);
+
   successResponse(res, httpStatus.OK, AppMessage.retrievedSuccessful, {
     ...idea,
-    ...calculateCount(idea)
+    ...calculateCount(idea),
+    likeStatus: getLikeStatus(idea, currentStaff.id)
   });
 });
 

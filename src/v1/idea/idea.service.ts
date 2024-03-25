@@ -333,6 +333,33 @@ const hideIdeaById = async <Key extends keyof Idea>(ideaId: number): Promise<Pic
   return updatedIdea as Pick<Idea, Key>;
 };
 
+const incrementViewCount = async (ideaId: number, staffId: number): Promise<boolean> => {
+  console.log('enter incrementViewCount, ideaId: ', ideaId, ' staffId: ', staffId);
+
+  console.log('all views: ', await prisma.view.findMany());
+
+  const view = await prisma.view.findFirst({
+    where: { ideaId, staffId }
+  });
+
+  if (!view) {
+    await prisma.view.create({
+      data: {
+        ideaId,
+        staffId
+      }
+    });
+
+    console.log('view not exist and increase view count');
+
+    return true;
+  }
+
+  console.log('view exist and not increase view count');
+
+  return false;
+};
+
 export default {
   createIdea,
   addIdeaCategories,
@@ -346,5 +373,6 @@ export default {
   deleteIdeaDocumentsByIdeaId,
   updateViewCount,
   hideIdeaByReportId,
-  hideIdeaById
+  hideIdeaById,
+  incrementViewCount
 };
