@@ -10,8 +10,10 @@ import successResponse from '../../utils/successResponse';
 import pick from '../../utils/pick';
 
 const createComment = catchAsync(async (req, res) => {
-  const { content, staffId, ideaId, isAnonymous } = req.body;
-  const comment = await commentService.createComment(content, staffId, ideaId, isAnonymous);
+  const staff = req.staff ?? { id: 1 };
+
+  const { content, ideaId, isAnonymous } = req.body;
+  const comment = await commentService.createComment(content, staff.id, ideaId, isAnonymous);
   successResponse(res, httpStatus.CREATED, AppMessage.commentCreated, { comment });
 });
 

@@ -10,8 +10,10 @@ import successResponse from '../../utils/successResponse';
 import pick from '../../utils/pick';
 
 const giveVote = catchAsync(async (req, res) => {
-  const { isThumbUp, staffId, ideaId } = req.body;
-  const vote = await voteService.createOrUpdateVote(isThumbUp, staffId, ideaId);
+  const staff = req.staff ?? { id: 1 };
+
+  const { isThumbUp, ideaId } = req.body;
+  const vote = await voteService.createOrUpdateVote(isThumbUp, staff.id, ideaId);
   successResponse(res, httpStatus.OK, AppMessage.voteCreated, { vote });
 });
 

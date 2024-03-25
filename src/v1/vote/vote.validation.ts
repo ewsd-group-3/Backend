@@ -3,7 +3,6 @@ import Joi from 'joi';
 const createVote = {
   body: Joi.object().keys({
     isThumbUp: Joi.boolean().required(),
-    staffId: Joi.number().integer().required(),
     ideaId: Joi.number().integer().required()
   })
 };
