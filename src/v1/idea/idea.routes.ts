@@ -37,4 +37,10 @@ router
     ideaController.deleteIdea
   );
 
+router.route('/:ideaId/hide').patch(
+  // auth('STAFF'),
+  validate(ideaValidation.updateIdea),
+  ideaController.hideIdea
+);
+
 export default router;

@@ -25,6 +25,7 @@ const AppMessage = {
   ideaCreated: 'Idea is Created',
   ideaUpdated: 'Idea information has been updated',
   ideaDeleted: 'Idea is deleted',
+  ideaHidden: 'Idea is hidden',
 
   // category
   announcementCreated: 'Announcement is Created',
