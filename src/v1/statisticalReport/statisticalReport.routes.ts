@@ -13,7 +13,7 @@ router.route('/ideas').get(
 );
 
 router.route('/departments').get(
-  // auth('QA_MANAGER', 'QA_COORDINATOR'),
+  // auth('QA_MANAGER'),
   validate(statisticalReportValidation.getDepartmentReport),
   statisticalReportController.getDepartmentReport
 );
