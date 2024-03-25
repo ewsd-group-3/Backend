@@ -15,6 +15,8 @@ const createIdea = async (
   semesterId: number,
   isAnonymous: boolean
 ): Promise<Idea> => {
+  console.log('desc before create: ', description);
+
   return prisma.idea.create({ data: { title, description, authorId, semesterId, isAnonymous } });
 };
 
@@ -90,6 +92,7 @@ const queryIdeas = async <Key extends keyof Idea>(
 
   const ideas = await prisma.idea.findMany({
     // where: filter,
+    where: { isHidden: false },
     // select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {}),
     include: {
       ideaCategories: {

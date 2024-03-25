@@ -260,6 +260,32 @@ const createExcelStream = async (academicInfoId: number) => {
   return excelStream;
 };
 
+const getCurrentSemester = async (): Promise<Semester> => {
+  const currentSemester = await prisma.semester.findFirst({
+    where: { startDate: { lte: new Date() }, closureDate: { gte: new Date() } }
+  });
+
+  if (!currentSemester) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Semester not found');
+  }
+
+  return currentSemester;
+};
+
+const getCurrentAcademicInfo = async (): Promise<AcademicInfo> => {
+  const currentSemester = await getCurrentSemester();
+
+  const academicInfo = await prisma.academicInfo.findUnique({
+    where: { id: currentSemester.academicInfoId }
+  });
+
+  if (!academicInfo) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'AcademicInfo not found');
+  }
+
+  return academicInfo;
+};
+
 export default {
   createAcademicInfo,
   createSemester,
@@ -269,5 +295,7 @@ export default {
   updateAcademicInfoById,
   updateSemesterById,
   deleteAcademicInfoById,
-  createExcelStream
+  createExcelStream,
+  getCurrentSemester,
+  getCurrentAcademicInfo
 };

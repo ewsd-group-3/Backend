@@ -1,5 +1,6 @@
 import httpStatus from 'http-status';
 import ideaService from './idea.service';
+import academicInfoService from './../academicInfo/academicInfo.services';
 import AppMessage from '../../constants/message.constant';
 
 /* Utils */
@@ -10,11 +11,25 @@ import pick from '../../utils/pick';
 import { Idea, IdeaDocument, Vote } from '@prisma/client';
 
 const createIdea = catchAsync(async (req, res) => {
-  const { title, description, authorId, semesterId, isAnonymous, categoryIds, documents } =
-    req.body;
+  const { title, description, isAnonymous, categoryIds, documents } = req.body;
+
+  const author = req.staff ?? { id: 1 };
+
+  // check semester valid
+  const semester = await academicInfoService.getCurrentSemester();
+
+  if (!semester) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'There is no active semester');
+  }
 
   // check categories valid
-  const idea = await ideaService.createIdea(title, description, authorId, semesterId, isAnonymous);
+  const idea = await ideaService.createIdea(
+    title,
+    description,
+    author.id,
+    semester.id,
+    isAnonymous
+  );
 
   // Add Idea Categories
   const ideaCategories = await ideaService.addIdeaCategories(idea.id, categoryIds);
@@ -22,7 +37,7 @@ const createIdea = catchAsync(async (req, res) => {
   // Add Idea Documents
   let ideaDocuments: IdeaDocument[] = [];
 
-  documents.forEach(async (document: IdeaDocument) => {
+  documents?.forEach(async (document: IdeaDocument) => {
     ideaDocuments.push(
       await ideaService.addIdeaDocument(
         document.name,
@@ -131,7 +146,10 @@ const getIdea = catchAsync(async (req, res) => {
   if (!idea) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Id is not found');
   }
-  successResponse(res, httpStatus.OK, AppMessage.retrievedSuccessful, idea);
+  successResponse(res, httpStatus.OK, AppMessage.retrievedSuccessful, {
+    ...idea,
+    ...calculateCount(idea)
+  });
 });
 
 const updateIdea = catchAsync(async (req, res) => {
