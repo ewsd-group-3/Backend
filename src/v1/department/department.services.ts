@@ -135,7 +135,7 @@ const deleteDepartmentById = async (departmentId: number): Promise<Department> =
   const staffs = await prisma.staff.findMany({
     where: { departmentId: department.id }
   });
-  if (staffs) {
+  if (staffs.length > 0) {
     throw new ApiError(
       httpStatus.BAD_REQUEST,
       `Cannot be Deleted! Staffs are in the Department '${department.name}'!`
