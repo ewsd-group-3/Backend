@@ -15,14 +15,15 @@ const createStaff = {
 
 const getStaffs = {
   query: Joi.object().keys({
-    name: Joi.string(),
-    email: Joi.string(),
-    role: Joi.string(),
-    department: Joi.string(),
     sortBy: Joi.string(),
     sortType: Joi.string(),
     limit: Joi.number().integer(),
-    page: Joi.number().integer()
+    page: Joi.number().integer(),
+    name: Joi.string(),
+    email: Joi.string(),
+    role: Joi.string(),
+    isActive: Joi.boolean(),
+    departmentId: Joi.number()
   })
 };
 

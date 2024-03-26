@@ -40,6 +40,7 @@ const loginStaffWithEmailAndPassword = async (
   }
   const updatedStaff = await prisma.staff.update({
     where: { id: staff.id },
+    include: { department: true },
     data: { lastLoginDate: new Date() }
   });
   return exclude(updatedStaff, ['password']);
