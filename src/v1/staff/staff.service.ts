@@ -86,7 +86,7 @@ const queryStaffs = async <Key extends keyof Staff>(
 
   const staffs = await prisma.staff.findMany({
     where: filter,
-    include: { department: {} },
+    include: { department: true },
     skip: (page - 1) * limit,
     take: limit,
     orderBy: sortBy ? { [sortBy]: sortType } : undefined

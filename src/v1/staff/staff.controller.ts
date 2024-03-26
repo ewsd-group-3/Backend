@@ -18,7 +18,7 @@ const createStaff = catchAsync(async (req, res) => {
 });
 
 const getStaffs = catchAsync(async (req, res) => {
-  const filter = pick(req.query, ['name', 'role']);
+  const filter = pick(req.query, ['name', 'email', 'role', 'isActive', 'departmentId']);
   const options = pick(req.query, ['sortBy', 'sortType', 'limit', 'page']);
   const { page, limit, count, totalPages, staffs } = await staffService.queryStaffs(
     filter,
