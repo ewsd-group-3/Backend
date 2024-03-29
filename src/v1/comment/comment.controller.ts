@@ -13,6 +13,7 @@ const createComment = catchAsync(async (req, res) => {
   const staff = req.staff ?? { id: 1 };
 
   const { content, ideaId, isAnonymous } = req.body;
+
   const comment = await commentService.createComment(content, staff.id, ideaId, isAnonymous);
   successResponse(res, httpStatus.CREATED, AppMessage.commentCreated, { comment });
 });
