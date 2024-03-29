@@ -11,6 +11,7 @@ import { AuthTokensResponse } from '../../types/response';
 /**
  * Generate token
  * @param {number} staffId
+ * @param {number} depId
  * @param {Moment} expires
  * @param {string} type
  * @param {string} [secret]
@@ -18,12 +19,14 @@ import { AuthTokensResponse } from '../../types/response';
  */
 const generateToken = (
   staffId: number,
+  depId: number,
   expires: Moment,
   type: TokenType,
   secret = config.jwt.secret
 ): string => {
   const payload = {
     sub: staffId,
+    depId: depId,
     iat: moment().unix(),
     exp: expires.unix(),
     type
@@ -82,12 +85,25 @@ const verifyToken = async (token: string, type: TokenType): Promise<Token> => {
  * @param {Staff} staff
  * @returns {Promise<AuthTokensResponse>}
  */
-const generateAuthTokens = async (staff: { id: number }): Promise<AuthTokensResponse> => {
+const generateAuthTokens = async (staff: {
+  id: number;
+  departmentId: number;
+}): Promise<AuthTokensResponse> => {
   const accessTokenExpires = moment().add(config.jwt.accessExpirationMinutes, 'minutes');
-  const accessToken = generateToken(staff.id, accessTokenExpires, TokenType.ACCESS);
+  const accessToken = generateToken(
+    staff.id,
+    staff.departmentId,
+    accessTokenExpires,
+    TokenType.ACCESS
+  );
 
   const refreshTokenExpires = moment().add(config.jwt.refreshExpirationDays, 'days');
-  const refreshToken = generateToken(staff.id, refreshTokenExpires, TokenType.REFRESH);
+  const refreshToken = generateToken(
+    staff.id,
+    staff.departmentId,
+    refreshTokenExpires,
+    TokenType.REFRESH
+  );
   await saveToken(refreshToken, staff.id, refreshTokenExpires, TokenType.REFRESH);
 
   return {
@@ -113,7 +129,12 @@ const generateResetPasswordToken = async (email: string): Promise<string> => {
     throw new ApiError(httpStatus.NOT_FOUND, 'No staffs found with this email');
   }
   const expires = moment().add(config.jwt.resetPasswordExpirationMinutes, 'minutes');
-  const resetPasswordToken = generateToken(staff.id as number, expires, TokenType.RESET_PASSWORD);
+  const resetPasswordToken = generateToken(
+    staff.id as number,
+    staff.departmentId as number,
+    expires,
+    TokenType.RESET_PASSWORD
+  );
   await saveToken(resetPasswordToken, staff.id as number, expires, TokenType.RESET_PASSWORD);
   return resetPasswordToken;
 };
@@ -123,9 +144,17 @@ const generateResetPasswordToken = async (email: string): Promise<string> => {
  * @param {Staff} staff
  * @returns {Promise<string>}
  */
-const generateVerifyEmailToken = async (staff: { id: number }): Promise<string> => {
+const generateVerifyEmailToken = async (staff: {
+  id: number;
+  departmentId: number;
+}): Promise<string> => {
   const expires = moment().add(config.jwt.verifyEmailExpirationMinutes, 'minutes');
-  const verifyEmailToken = generateToken(staff.id, expires, TokenType.VERIFY_EMAIL);
+  const verifyEmailToken = generateToken(
+    staff.id,
+    staff.departmentId,
+    expires,
+    TokenType.VERIFY_EMAIL
+  );
   await saveToken(verifyEmailToken, staff.id, expires, TokenType.VERIFY_EMAIL);
   return verifyEmailToken;
 };
