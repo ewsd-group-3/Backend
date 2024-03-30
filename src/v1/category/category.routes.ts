@@ -32,7 +32,7 @@ router
     categoryController.updateCategory
   )
   .delete(
-    auth('QA_MANAGER'),
+    // auth('QA_MANAGER'),
     validate(categoryValidation.deleteCategory),
     categoryController.deleteCategory
   );
