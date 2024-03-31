@@ -27,7 +27,7 @@ const giveVote = catchAsync(async (req, res) => {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid vote status');
   }
 
-  successResponse(res, httpStatus.OK, `Staff ${staff.id} ${voteStatus} the idea`, { vote });
+  successResponse(res, httpStatus.OK, `${staff.name} ${voteStatus} the idea`, { vote });
 });
 
 const getVotes = catchAsync(async (req, res) => {

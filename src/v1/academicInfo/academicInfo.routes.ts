@@ -9,12 +9,12 @@ const router = express.Router();
 router
   .route('/')
   .post(
-    // auth('ADMIN'),
+    auth('ADMIN'),
     validate(academicInfoValidation.createAcademicInfo),
     academicInfoController.createAcademicInfo
   )
   .get(
-    // auth('ADMIN', 'QA_MANAGER'),
+    auth('ADMIN', 'QA_MANAGER'),
     validate(academicInfoValidation.getAcademicInfos),
     academicInfoController.getAcademicInfos
   );
@@ -22,24 +22,23 @@ router
 router
   .route('/:academicInfoId')
   .get(
-    // auth('ADMIN'),
+    auth('ADMIN'),
     validate(academicInfoValidation.getAcademicInfo),
     academicInfoController.getAcademicInfo
   )
   .patch(
-    // auth('ADMIN'),
+    auth('ADMIN'),
     validate(academicInfoValidation.updateAcademicInfo),
     academicInfoController.updateAcademicInfo
   )
   .delete(
-    // auth('ADMIN'),
+    auth('ADMIN'),
     validate(academicInfoValidation.deleteAcademicInfo),
     academicInfoController.deleteAcademicInfo
   );
 
-router.route('/download/:academicInfoId').post(
-  // auth('QA_MANAGER'),
-  academicInfoController.downloadIdeaZipData
-);
+router
+  .route('/download/:academicInfoId')
+  .post(auth('QA_MANAGER'), academicInfoController.downloadIdeaZipData);
 
 export default router;
