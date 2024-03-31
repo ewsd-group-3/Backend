@@ -20,10 +20,12 @@ const verifyCallback =
 
     if (requiredRights.length) {
       const staffRights = roleRights.get(staff.role) ?? [];
-      const hasRequiredRights = requiredRights.every((requiredRight) =>
-        staffRights.includes(requiredRight)
-      );
-      if (!hasRequiredRights && req.params.staffId !== staff.id) {
+      const hasRequiredRights = staffRights.some((right) => requiredRights.includes(right));
+      // const hasRequiredRights = requiredRights.every((requiredRight) =>
+      //   staffRights.includes(requiredRight)
+      // );
+      // if (!hasRequiredRights && req.params.staffId !== staff.id) {
+      if (!hasRequiredRights) {
         return reject(new ApiError(httpStatus.FORBIDDEN, 'Forbidden'));
       }
     }
