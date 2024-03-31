@@ -224,7 +224,7 @@ const emailTemplate = (text: string) => {
   
                                 <div style="color: #958d8d; line-height: 170%; text-align: center; word-wrap: break-word;">
                                   <p style="font-size: 14px; line-height: 170%;">EWSD Group-3</p>
-                                  <p style="font-size: 14px; line-height: 170%;">For any assistance, write to us at <a rel="noopener" href="mailto:support@codingmonk.in?" target="_blank">Support@htetnainghein2001@gmail.com</a><br /><br /></p>
+                                  <p style="font-size: 14px; line-height: 170%;">For any assistance, write to us at <a rel="noopener" href="mailto:support@noreply.wayneuni@gmail.com?" target="_blank">Support@noreply.wayneuni@gmail.com</a><br /><br /></p>
                                 </div>
   
                               </td>

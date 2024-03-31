@@ -43,19 +43,21 @@ const createAnnouncement = async (
     }
   });
 
-  staffs.map(async (staff) => {
-    // Send Email
-    await emailService.sendEmail(staff.email, subject, content);
+  await Promise.all(
+    staffs.map(async (staff) => {
+      // Send Email
+      await emailService.sendEmail(staff.email, subject, content);
 
-    await prisma.staffAnnouncement.create({
-      data: {
-        staffId: staff.id,
-        departmentId: staff.departmentId,
-        announcementId: announcement.id,
-        status: StaffAnnouncementStatus.SUCCESS
-      }
-    });
-  });
+      await prisma.staffAnnouncement.create({
+        data: {
+          staffId: staff.id,
+          departmentId: staff.departmentId,
+          announcementId: announcement.id,
+          status: StaffAnnouncementStatus.SUCCESS
+        }
+      });
+    })
+  );
 
   return announcement as Announcement;
 };
