@@ -3,6 +3,8 @@ import AppMessage from '../../constants/message.constant';
 
 /* Services */
 import commentService from './comment.services';
+import emailService from './../auth/email.service';
+import staffService from '../staff/staff.service';
 
 /* Utils */
 import catchAsync from '../../utils/catchAsync';
@@ -15,6 +17,18 @@ const createComment = catchAsync(async (req, res) => {
   const { content, ideaId, isAnonymous } = req.body;
 
   const comment = await commentService.createComment(content, staff.id, ideaId, isAnonymous);
+
+  // var qaCoordinator = await staffService.getQACoordinatorStaffByDepartmentId(staff.departmentId);
+  var commentBy = await staffService.getStaffById(staff.id);
+
+  if (commentBy?.email) {
+    await emailService.sendEmail(
+      commentBy?.email,
+      'New Comment',
+      'A new comment has been added to your idea'
+    );
+  }
+
   successResponse(res, httpStatus.CREATED, AppMessage.commentCreated, { comment });
 });
 

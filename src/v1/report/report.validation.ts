@@ -3,7 +3,6 @@ import Joi from 'joi';
 const createReport = {
   body: Joi.object().keys({
     ideaId: Joi.number().required(),
-    reportById: Joi.number().required(),
     reason: Joi.string()
   })
 };
@@ -41,17 +40,6 @@ const deleteReport = {
   })
 };
 
-const approveReport = {
-  params: Joi.object().keys({
-    reportId: Joi.number().integer()
-  }),
-  body: Joi.object()
-    .keys({
-      approvedBy: Joi.number()
-    })
-    .min(1)
-};
-
 const rejectReport = {
   params: Joi.object().keys({
     reportId: Joi.number().integer()
@@ -69,6 +57,5 @@ export default {
   getReport,
   updateReport,
   deleteReport,
-  approveReport,
   rejectReport
 };

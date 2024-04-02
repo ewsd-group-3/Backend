@@ -70,7 +70,7 @@ const queryAcademicInfos = async <Key extends keyof AcademicInfo>(
   limit: number;
   count: number;
   totalPages: number;
-  academicInfos: Pick<AcademicInfo, Key>[];
+  academicInfos: AcademicInfo[];
 }> => {
   const page = options.page ?? 1;
   const limit = options.limit ?? 5;
@@ -94,7 +94,7 @@ const queryAcademicInfos = async <Key extends keyof AcademicInfo>(
     limit,
     count,
     totalPages,
-    academicInfos: academicInfos as Pick<AcademicInfo, Key>[]
+    academicInfos
   };
 };
 
@@ -262,7 +262,7 @@ const createExcelStream = async (academicInfoId: number) => {
 
 const getCurrentSemester = async (): Promise<Semester> => {
   const currentSemester = await prisma.semester.findFirst({
-    where: { startDate: { lte: new Date() }, closureDate: { gte: new Date() } }
+    where: { startDate: { lte: new Date() }, finalClosureDate: { gte: new Date() } }
   });
 
   if (!currentSemester) {

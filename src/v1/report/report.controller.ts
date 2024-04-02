@@ -6,10 +6,13 @@ import AppMessage from '../../constants/message.constant';
 import catchAsync from '../../utils/catchAsync';
 import successResponse from '../../utils/successResponse';
 import pick from '../../utils/pick';
+import ideaService from '../idea/idea.service';
 
 const createReport = catchAsync(async (req, res) => {
-  const { ideaId, reportById, reason } = req.body;
-  const report = await reportService.createReport(ideaId, reportById, reason);
+  const staff = req.staff;
+
+  const { ideaId, reason } = req.body;
+  const report = await reportService.createReport(ideaId, staff.id, reason);
   successResponse(res, httpStatus.CREATED, AppMessage.reportCreated, { report });
 });
 
@@ -37,13 +40,6 @@ const deleteReport = catchAsync(async (req, res) => {
   successResponse(res, httpStatus.OK, AppMessage.reportDeleted);
 });
 
-const approveReport = catchAsync(async (req, res) => {
-  const { approvedById } = req.body;
-
-  await reportService.approvedReportById(req.params.reportId, approvedById);
-  successResponse(res, httpStatus.OK, AppMessage.reportApproved);
-});
-
 const rejectReport = catchAsync(async (req, res) => {
   const { approvedById } = req.body;
 
@@ -57,6 +53,5 @@ export default {
   getReport,
   updateReport,
   deleteReport,
-  approveReport,
   rejectReport
 };

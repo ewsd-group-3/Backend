@@ -61,10 +61,24 @@ const deleteIdea = {
   })
 };
 
+const hideIdea = {
+  params: Joi.object().keys({
+    ideaId: Joi.number().integer()
+  })
+};
+
+const hideIdeaByReportId = {
+  params: Joi.object().keys({
+    reportId: Joi.number().integer()
+  })
+};
+
 export default {
   createIdea,
   getIdeas,
   getIdea,
   updateIdea,
-  deleteIdea
+  deleteIdea,
+  hideIdea,
+  hideIdeaByReportId
 };

@@ -133,6 +133,22 @@ const getStaffByEmail = async <Key extends keyof Staff>(
 };
 
 /**
+ * Get staff by email
+ * @param {number} departmentId
+ * @param {Array<Key>} keys
+ * @returns {Promise<Pick<Staff, Key> | null>}
+ */
+const getQACoordinatorStaffByDepartmentId = async <Key extends keyof Staff>(
+  departmentId: number,
+  keys: Key[] = ['id', 'email', 'name', 'password', 'role', 'createdAt', 'updatedAt'] as Key[]
+): Promise<Pick<Staff, Key> | null> => {
+  return (await prisma.staff.findFirst({
+    where: { departmentId, role: 'QA_COORDINATOR' },
+    select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {})
+  })) as Promise<Pick<Staff, Key> | null>;
+};
+
+/**
  * Update staff by id
  * @param {ObjectId} staffId
  * @param {Object} updateBody
@@ -323,11 +339,13 @@ const uploadProfile = async <Key extends keyof Staff>(
   });
   return updatedStaff as Pick<Staff, Key>;
 };
+
 export default {
   createStaff,
   queryStaffs,
   getStaffById,
   getStaffByEmail,
+  getQACoordinatorStaffByDepartmentId,
   updateStaffById,
   deleteStaffById,
   toggleActive,

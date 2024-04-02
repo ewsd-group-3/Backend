@@ -1,6 +1,8 @@
 import httpStatus from 'http-status';
 import ideaService from './idea.service';
 import academicInfoService from './../academicInfo/academicInfo.services';
+import staffService from '../staff/staff.service';
+import emailService from '../auth/email.service';
 import AppMessage from '../../constants/message.constant';
 
 /* Utils */
@@ -49,6 +51,12 @@ const createIdea = catchAsync(async (req, res) => {
     );
   });
 
+  var qaCoordinator = await staffService.getQACoordinatorStaffByDepartmentId(author.departmentId);
+
+  if (qaCoordinator?.email) {
+    await emailService.sendEmail(qaCoordinator?.email, 'New Idea', 'One Idea is submitted');
+  }
+
   successResponse(res, httpStatus.CREATED, AppMessage.ideaCreated, {
     idea,
     ideaCategories,
@@ -57,9 +65,15 @@ const createIdea = catchAsync(async (req, res) => {
 });
 
 const getIdeas = catchAsync(async (req, res) => {
+  const currentSemester = await academicInfoService.getCurrentSemester();
+
   const currentStaff = req.staff ?? { id: 1 };
 
-  const filter = pick(req.query, ['name']);
+  const filter = pick(req.query, ['title']);
+
+  filter['semesterId'] = currentSemester.id;
+  filter['isHidden'] = false;
+
   const options = pick(req.query, ['sortBy', 'sortType', 'limit', 'page']);
 
   const additionalAttributes: any[] = [
@@ -198,8 +212,33 @@ const deleteIdea = catchAsync(async (req, res) => {
 });
 
 const hideIdea = catchAsync(async (req, res) => {
-  await ideaService.hideIdeaById(req.params.ideaId);
-  successResponse(res, httpStatus.OK, AppMessage.ideaHidden);
+  var idea = await ideaService.hideIdeaById(req.params.ideaId);
+  successResponse(res, httpStatus.OK, AppMessage.ideaHidden, { idea });
+});
+
+const unhideIdea = catchAsync(async (req, res) => {
+  var idea = await ideaService.unhideIdeaById(req.params.ideaId);
+  successResponse(res, httpStatus.OK, AppMessage.ideaUnhide, { idea });
+});
+
+const hideIdeaByReportId = catchAsync(async (req, res) => {
+  const { reportId } = req.body;
+
+  console.log('ReportId', reportId);
+
+  var idea = await ideaService.hideIdeaByReportId(reportId);
+
+  successResponse(res, httpStatus.OK, AppMessage.ideaHidden, { idea });
+});
+
+const unhideIdeaByReportId = catchAsync(async (req, res) => {
+  const { reportId } = req.body;
+
+  console.log('ReportId', reportId);
+
+  var idea = await ideaService.hideIdeaByReportId(reportId);
+
+  successResponse(res, httpStatus.OK, AppMessage.ideaUnhide, { idea });
 });
 
 export default {
@@ -208,5 +247,8 @@ export default {
   getIdea,
   updateIdea,
   deleteIdea,
-  hideIdea
+  hideIdea,
+  hideIdeaByReportId,
+  unhideIdea,
+  unhideIdeaByReportId
 };
