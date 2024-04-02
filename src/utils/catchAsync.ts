@@ -7,7 +7,7 @@ export interface CustomParamsDictionary {
 
 declare module 'express-serve-static-core' {
   interface Request {
-    staff: { id: number; name: string; email: string; role: string };
+    staff: { id: number; name: string; departmentId: number; email: string; role: string };
   }
 }
 

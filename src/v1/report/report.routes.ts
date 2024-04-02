@@ -8,7 +8,11 @@ const router = express.Router();
 
 router
   .route('/')
-  .post(auth('QA_MANAGER'), validate(reportValidation.createReport), reportController.createReport)
+  .post(
+    auth('QA_MANAGER', 'QA_COORDINATOR'),
+    validate(reportValidation.createReport),
+    reportController.createReport
+  )
   .get(auth('STAFF'), validate(reportValidation.getReports), reportController.getReports);
 
 router
@@ -19,14 +23,6 @@ router
     auth('QA_MANAGER'),
     validate(reportValidation.deleteReport),
     reportController.deleteReport
-  );
-
-router
-  .route('/:reportId/approve')
-  .patch(
-    auth('QA_MANAGER'),
-    validate(reportValidation.approveReport),
-    reportController.approveReport
   );
 
 router

@@ -262,7 +262,7 @@ const createExcelStream = async (academicInfoId: number) => {
 
 const getCurrentSemester = async (): Promise<Semester> => {
   const currentSemester = await prisma.semester.findFirst({
-    where: { startDate: { lte: new Date() }, closureDate: { gte: new Date() } }
+    where: { startDate: { lte: new Date() }, finalClosureDate: { gte: new Date() } }
   });
 
   if (!currentSemester) {
