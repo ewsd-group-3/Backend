@@ -86,7 +86,7 @@ const queryStaffs = async <Key extends keyof Staff>(
 
   const staffs = await prisma.staff.findMany({
     where: filter,
-    include: { department: {} },
+    include: { department: true },
     skip: (page - 1) * limit,
     take: limit,
     orderBy: sortBy ? { [sortBy]: sortType } : undefined
@@ -144,6 +144,8 @@ const updateStaffById = async <Key extends keyof Staff>(
   // keys: Key[] = ['id', 'email', 'name', 'role'] as Key[]
 ): Promise<Pick<Staff, Key>> => {
   const staff = await getStaffById(staffId);
+
+  // Email Validate
   if (
     updateBody.email &&
     staff.email !== updateBody.email &&
@@ -151,13 +153,36 @@ const updateStaffById = async <Key extends keyof Staff>(
   ) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
   }
+
+  // Role Validate
+  const adminStaff = await getAdminStaff();
+  const qaMgrStaff = await getQAManagerStaff();
+
+  if (
+    updateBody.role &&
+    ((updateBody.role === 'ADMIN' && adminStaff) ||
+      (updateBody.role === 'QA_MANAGER' && qaMgrStaff))
+  ) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      `Cannot update Role because the system have already active ${updateBody.role} in the System!`
+    );
+  }
+
+  if (updateBody.role && updateBody.role === 'QA_COORDINATOR') {
+    const qa_coordinator = await findQACoordinatorStaff(staff.departmentId);
+    if (qa_coordinator)
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        `Cannot update Role because the system have already active ${updateBody.role} in the System!`
+      );
+  }
+
   const updatedStaff = await prisma.staff.update({
     where: { id: staff.id },
     data: updateBody,
     include: {
-      department: {
-        select: { id: true, name: true }
-      }
+      department: true
     }
     // select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {})
   });

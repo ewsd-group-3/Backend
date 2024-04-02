@@ -15,6 +15,8 @@ const createIdea = async (
   semesterId: number,
   isAnonymous: boolean
 ): Promise<Idea> => {
+  console.log('desc before create: ', description);
+
   return prisma.idea.create({ data: { title, description, authorId, semesterId, isAnonymous } });
 };
 
@@ -89,7 +91,8 @@ const queryIdeas = async <Key extends keyof Idea>(
   const totalPages: number = Math.ceil(count / limit);
 
   const ideas = await prisma.idea.findMany({
-    where: filter,
+    // where: filter,
+    where: { isHidden: false },
     // select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {}),
     include: {
       ideaCategories: {
@@ -141,16 +144,18 @@ const getIdeaDetailById = async <Key extends keyof Idea>(id: number): Promise<Pi
         }
       },
       author: {
-        select: {
-          id: true,
-          name: true,
-          email: true
+        include: {
+          department: true
         }
       },
       semester: true,
       comments: {
         include: {
-          staff: true
+          staff: {
+            include: {
+              department: true
+            }
+          }
         }
       },
       votes: true,
@@ -309,6 +314,52 @@ const hideIdeaByReportId = async <Key extends keyof Idea>(
   return updatedIdea as Pick<Idea, Key>;
 };
 
+/**
+ * Hide Idea by id
+ * @param {ObjectId} ideaId
+ * @returns {Promise<Report>}
+ */
+const hideIdeaById = async <Key extends keyof Idea>(ideaId: number): Promise<Pick<Idea, Key>> => {
+  const idea = await getIdeaById(ideaId);
+
+  if (!idea) throw new ApiError(httpStatus.NOT_FOUND, 'Idea is not found');
+
+  const updatedIdea = await prisma.idea.update({
+    where: { id: idea.id },
+    data: {
+      isHidden: true
+    }
+  });
+  return updatedIdea as Pick<Idea, Key>;
+};
+
+const incrementViewCount = async (ideaId: number, staffId: number): Promise<boolean> => {
+  console.log('enter incrementViewCount, ideaId: ', ideaId, ' staffId: ', staffId);
+
+  console.log('all views: ', await prisma.view.findMany());
+
+  const view = await prisma.view.findFirst({
+    where: { ideaId, staffId }
+  });
+
+  if (!view) {
+    await prisma.view.create({
+      data: {
+        ideaId,
+        staffId
+      }
+    });
+
+    console.log('view not exist and increase view count');
+
+    return true;
+  }
+
+  console.log('view exist and not increase view count');
+
+  return false;
+};
+
 export default {
   createIdea,
   addIdeaCategories,
@@ -321,5 +372,7 @@ export default {
   deleteIdeaCategoriesByIdeaId,
   deleteIdeaDocumentsByIdeaId,
   updateViewCount,
-  hideIdeaByReportId
+  hideIdeaByReportId,
+  hideIdeaById,
+  incrementViewCount
 };

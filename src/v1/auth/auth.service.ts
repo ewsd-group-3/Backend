@@ -40,6 +40,7 @@ const loginStaffWithEmailAndPassword = async (
   }
   const updatedStaff = await prisma.staff.update({
     where: { id: staff.id },
+    include: { department: true },
     data: { lastLoginDate: new Date() }
   });
   return exclude(updatedStaff, ['password']);
@@ -73,8 +74,10 @@ const refreshAuth = async (refreshToken: string): Promise<AuthTokensResponse> =>
   try {
     const refreshTokenData = await tokenService.verifyToken(refreshToken, TokenType.REFRESH);
     const { staffId } = refreshTokenData;
+
+    const staff = await staffService.getStaffById(staffId);
     await prisma.token.delete({ where: { id: refreshTokenData.id } });
-    return tokenService.generateAuthTokens({ id: staffId });
+    return tokenService.generateAuthTokens({ id: staffId, departmentId: staff.departmentId });
   } catch (error) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Please authenticate');
   }

@@ -4,8 +4,6 @@ const createIdea = {
   body: Joi.object().keys({
     title: Joi.string().required(),
     description: Joi.string().required(),
-    authorId: Joi.number().integer().required(),
-    semesterId: Joi.number().integer().required(),
     isAnonymous: Joi.boolean().required(),
     categoryIds: Joi.array().items(Joi.number().integer()).required(),
     documents: Joi.array().items(

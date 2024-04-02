@@ -3,7 +3,6 @@ import Joi from 'joi';
 const createComment = {
   body: Joi.object().keys({
     content: Joi.string().required(),
-    staffId: Joi.number().integer().required(),
     ideaId: Joi.number().integer().required(),
     isAnonymous: Joi.boolean().required()
   })

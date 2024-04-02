@@ -8,33 +8,17 @@ const router = express.Router();
 
 router
   .route('/')
-  .post(
-    // auth('STAFF'),
-    validate(ideaValidation.createIdea),
-    ideaController.createIdea
-  )
-  .get(
-    // auth('STAFF'),
-    validate(ideaValidation.getIdeas),
-    ideaController.getIdeas
-  );
+  .post(auth('STAFF'), validate(ideaValidation.createIdea), ideaController.createIdea)
+  .get(auth('STAFF'), validate(ideaValidation.getIdeas), ideaController.getIdeas);
 
 router
   .route('/:ideaId')
-  .get(
-    // auth('STAFF'),
-    validate(ideaValidation.getIdea),
-    ideaController.getIdea
-  )
-  .patch(
-    // auth('STAFF'),
-    validate(ideaValidation.updateIdea),
-    ideaController.updateIdea
-  )
-  .delete(
-    // auth('STAFF'),
-    validate(ideaValidation.deleteIdea),
-    ideaController.deleteIdea
-  );
+  .get(auth('STAFF'), validate(ideaValidation.getIdea), ideaController.getIdea)
+  .patch(auth('STAFF'), validate(ideaValidation.updateIdea), ideaController.updateIdea)
+  .delete(auth('STAFF'), validate(ideaValidation.deleteIdea), ideaController.deleteIdea);
+
+router
+  .route('/:ideaId/hide')
+  .patch(auth('STAFF'), validate(ideaValidation.updateIdea), ideaController.hideIdea);
 
 export default router;

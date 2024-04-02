@@ -1,3 +1,5 @@
+import { Category } from '@prisma/client';
+
 export interface TokenResponse {
   token: string;
   expires: Date;
@@ -13,6 +15,16 @@ export interface AuthStaff {
   name: string;
   email: string;
   role: string;
+}
+
+export interface CategoryPercentage {
+  category: Category;
+  percentage: number;
+}
+
+export interface DepartmentPercentage {
+  department: Department;
+  percentage: number;
 }
 
 // export interface

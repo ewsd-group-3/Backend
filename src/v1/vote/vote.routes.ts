@@ -8,25 +8,13 @@ const router = express.Router();
 
 router
   .route('/')
-  .post(
-    // auth('ADMIN'),
-    validate(voteValidation.createVote),
-    voteController.giveVote
-  )
-  .get(
-    // auth('ADMIN'),
-    validate(voteValidation.getVotes),
-    voteController.getVotes
-  );
+  .post(auth('STAFF'), validate(voteValidation.createVote), voteController.giveVote)
+  .get(auth('STAFF'), validate(voteValidation.getVotes), voteController.getVotes);
 
 router
   .route('/:voteId')
-  .get(auth('ADMIN'), validate(voteValidation.getVote), voteController.getVote)
-  // .patch(auth('ADMIN'), validate(voteValidation.updateVote), voteController.updateVote)
-  .delete(
-    // auth('ADMIN'),
-    validate(voteValidation.deleteVote),
-    voteController.deleteVote
-  );
+  .get(auth('STAFF'), validate(voteValidation.getVote), voteController.getVote)
+  // .patch(auth('STAFF'), validate(voteValidation.updateVote), voteController.updateVote)
+  .delete(auth('STAFF'), validate(voteValidation.deleteVote), voteController.deleteVote);
 
 export default router;

@@ -3,6 +3,8 @@ import httpStatus from 'http-status';
 import prisma from '../../prisma';
 import ApiError from '../../utils/apiError';
 
+import ideaService from '../idea/idea.service';
+
 /**
  * Create a vote
  * @param {Object} voteBody
@@ -13,6 +15,12 @@ const createOrUpdateVote = async (
   staffId: number,
   ideaId: number
 ): Promise<Vote> => {
+  var idea = await ideaService.getIdeaById(ideaId);
+
+  if (!idea) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Idea is not found');
+  }
+
   var vote = await getVoteByStaffIdAndIdeaId(staffId, ideaId);
 
   if (vote) {
@@ -122,11 +130,33 @@ const deleteVoteById = async (voteId: number): Promise<Vote> => {
   return vote;
 };
 
+/**
+ * Delete vote by StaffId And IdeaId
+ * @param {ObjectId} staffId
+ * @param {ObjectId} ideaId
+ * @returns {Promise<Vote>}
+ */
+const deleteVoteByStaffIdAndIdeaId = async (
+  staffId: number,
+  ideaId: number
+): Promise<Vote | null> => {
+  const vote = await getVoteByStaffIdAndIdeaId(staffId, ideaId);
+
+  if (!vote) {
+    return vote;
+  }
+
+  await prisma.vote.delete({ where: { id: vote.id } });
+
+  return vote;
+};
+
 export default {
   createOrUpdateVote,
   queryVotes,
   getVoteById,
   getVoteByStaffIdAndIdeaId,
   updateVoteById,
-  deleteVoteById
+  deleteVoteById,
+  deleteVoteByStaffIdAndIdeaId
 };

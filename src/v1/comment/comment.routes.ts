@@ -8,31 +8,15 @@ const router = express.Router();
 
 router
   .route('/')
-  .post(
-    // auth('ADMIN'),
-    validate(commentValidation.createComment),
-    commentController.createComment
-  )
-  .get(
-    // auth('ADMIN'),
-    validate(commentValidation.getComments),
-    commentController.getComments
-  );
+  .post(auth('STAFF'), validate(commentValidation.createComment), commentController.createComment)
+  .get(auth('STAFF'), validate(commentValidation.getComments), commentController.getComments);
 
 router
   .route('/:commentId')
-  .get(
-    // auth('ADMIN'),
-    validate(commentValidation.getComment),
-    commentController.getComment
-  )
-  .patch(
-    // auth('ADMIN'),
-    validate(commentValidation.updateComment),
-    commentController.updateComment
-  )
+  .get(auth('STAFF'), validate(commentValidation.getComment), commentController.getComment)
+  .patch(auth('STAFF'), validate(commentValidation.updateComment), commentController.updateComment)
   .delete(
-    // auth('ADMIN'),
+    auth('STAFF'),
     validate(commentValidation.deleteComment),
     commentController.deleteComment
   );
