@@ -55,8 +55,12 @@ const getAcademicInfos = catchAsync(async (req, res) => {
     limit,
     count,
     totalPages,
-    academicInfos: academicInfos.map((academicInfo) => ({
+    academicInfos: academicInfos.map((academicInfo: any) => ({
       ...academicInfo,
+      semesters: academicInfo.semesters.map((semester: any) => ({
+        ...semester,
+        status: getAcademicStatus(semester.startDate, semester.endDate)
+      })),
       status: getAcademicStatus(academicInfo.startDate, academicInfo.endDate)
     }))
   };

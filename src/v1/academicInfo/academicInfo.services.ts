@@ -70,7 +70,7 @@ const queryAcademicInfos = async <Key extends keyof AcademicInfo>(
   limit: number;
   count: number;
   totalPages: number;
-  academicInfos: Pick<AcademicInfo, Key>[];
+  academicInfos: AcademicInfo[];
 }> => {
   const page = options.page ?? 1;
   const limit = options.limit ?? 5;
@@ -94,7 +94,7 @@ const queryAcademicInfos = async <Key extends keyof AcademicInfo>(
     limit,
     count,
     totalPages,
-    academicInfos: academicInfos as Pick<AcademicInfo, Key>[]
+    academicInfos
   };
 };
 
