@@ -59,7 +59,7 @@ const getAcademicInfos = catchAsync(async (req, res) => {
       ...academicInfo,
       semesters: academicInfo.semesters.map((semester: any) => ({
         ...semester,
-        status: getAcademicStatus(semester.startDate, semester.endDate)
+        status: getAcademicStatus(semester.startDate, semester.finalClosureDate)
       })),
       status: getAcademicStatus(academicInfo.startDate, academicInfo.endDate)
     }))
@@ -95,6 +95,10 @@ const getAcademicInfo = catchAsync(async (req, res) => {
   );
   successResponse(res, httpStatus.OK, AppMessage.retrievedSuccessful, {
     ...academicInfo,
+    semesters: academicInfo.semesters.map((semester: any) => ({
+        ...semester,
+        status: getAcademicStatus(semester.startDate, semester.finalClosureDate)
+      })),
     status: getAcademicStatus(academicInfo.startDate, academicInfo.endDate)
   });
 });
