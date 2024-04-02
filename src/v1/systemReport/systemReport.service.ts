@@ -29,7 +29,8 @@ const getSystemReport = async (filter: {
             lte: endDate
           }
         })
-    }
+    },
+    orderBy: sortBy ? { [sortBy]:  } : undefined,
   });
   const ideaIds = ideas.map((idea) => idea.id);
 
