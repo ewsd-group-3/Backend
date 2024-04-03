@@ -66,6 +66,18 @@ const queryDepartments = async <Key extends keyof Department>(
   return { page, limit, count, totalPages, departments: departments as Pick<Department, Key>[] };
 };
 
+const queryAllDepartments = async () => {
+  const departments = await prisma.department.findMany({
+    include: {
+      _count: {
+        select: { staffs: true }
+      }
+    }
+  });
+
+  return { departments: departments };
+};
+
 /**
  * Get department by id
  * @param {ObjectId} id
@@ -148,6 +160,7 @@ const deleteDepartmentById = async (departmentId: number): Promise<Department> =
 export default {
   createDepartment,
   queryDepartments,
+  queryAllDepartments,
   getDepartmentById,
   getDepartmentByName,
   updateDepartmentById,

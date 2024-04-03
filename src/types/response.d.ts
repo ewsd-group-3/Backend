@@ -27,4 +27,11 @@ export interface DepartmentPercentage {
   percentage: number;
 }
 
-// export interface
+export interface TopActiveUsers {
+  staff: Staff;
+  ideasCount: number;
+  commentsCount: number;
+  votesCount: number;
+  viewsCount: number;
+  total: number;
+}

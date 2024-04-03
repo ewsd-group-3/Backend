@@ -31,6 +31,13 @@ const getDepartments = catchAsync(async (req, res) => {
   });
 });
 
+const getAllDepartments = catchAsync(async (req, res) => {
+  const { departments } = await departmentService.queryAllDepartments();
+  successResponse(res, httpStatus.OK, AppMessage.retrievedSuccessful, {
+    departments
+  });
+});
+
 const getDepartment = catchAsync(async (req, res) => {
   const department = await departmentService.getDepartmentById(req.params.departmentId);
   successResponse(res, httpStatus.OK, AppMessage.retrievedSuccessful, { department });
@@ -52,6 +59,7 @@ const deleteDepartment = catchAsync(async (req, res) => {
 export default {
   createDepartment,
   getDepartments,
+  getAllDepartments,
   getDepartment,
   updateDepartment,
   deleteDepartment

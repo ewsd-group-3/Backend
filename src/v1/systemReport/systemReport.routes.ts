@@ -7,7 +7,7 @@ import systemReportController from './systemReport.controller';
 const router = express.Router();
 
 router
-  .route('/ideas')
+  .route('/')
   .get(
     auth('ADMIN'),
     validate(systemReportValidation.getSystemReport),
