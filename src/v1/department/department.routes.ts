@@ -37,4 +37,13 @@ router
     departmentController.deleteDepartment
   );
 
+/* For All Departments Dropdown */
+router
+  .route('/')
+  .get(
+    auth('ADMIN', 'QA_MANAGER'),
+    validate(departmentValidation.getDepartments),
+    departmentController.getDepartments
+  );
+
 export default router;

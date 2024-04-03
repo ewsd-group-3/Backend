@@ -18,7 +18,8 @@ import exclude from '../../utils/exclude';
  */
 const loginStaffWithEmailAndPassword = async (
   email: string,
-  password: string
+  password: string,
+  browserName: string
 ): Promise<Omit<Staff, 'password'>> => {
   const staff = await staffService.getStaffByEmail(email, [
     'id',
@@ -38,6 +39,15 @@ const loginStaffWithEmailAndPassword = async (
   if (!staff.isActive) {
     throw new ApiError(httpStatus.FORBIDDEN, 'Account has been disabled!');
   }
+
+  // Create Login History
+  await prisma.loginHistory.create({
+    data: {
+      browserName,
+      staffId: staff.id
+    }
+  });
+
   const updatedStaff = await prisma.staff.update({
     where: { id: staff.id },
     include: { department: true },

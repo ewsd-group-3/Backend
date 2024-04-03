@@ -10,8 +10,8 @@ import catchAsync from '../../utils/catchAsync';
 import successResponse from '../../utils/successResponse';
 
 const login = catchAsync(async (req, res) => {
-  const { email, password } = req.body;
-  const staff = await authService.loginStaffWithEmailAndPassword(email, password);
+  const { email, password, browserName } = req.body;
+  const staff = await authService.loginStaffWithEmailAndPassword(email, password, browserName);
   const tokens = await tokenService.generateAuthTokens(staff);
   successResponse(res, httpStatus.OK, AppMessage.loggedIn, {
     staff,

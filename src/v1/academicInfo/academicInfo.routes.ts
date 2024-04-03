@@ -22,7 +22,7 @@ router
 router
   .route('/:academicInfoId')
   .get(
-    auth('ADMIN'),
+    auth('ADMIN', 'QA_MANAGER'),
     validate(academicInfoValidation.getAcademicInfo),
     academicInfoController.getAcademicInfo
   )

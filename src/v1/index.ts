@@ -5,6 +5,7 @@ import config from '../config/config';
 import authRoute from './auth/auth.routes';
 import staffRoute from './staff/staff.routes';
 import departmentRoute from './department/department.routes';
+import allDepartmentRoute from './department/allDepartment.routes';
 import ideaRoute from './idea/idea.routes';
 import categoryRoute from './category/category.routes';
 import academicRoute from './academicInfo/academicInfo.routes';
@@ -13,6 +14,7 @@ import commentRoute from './comment/comment.routes';
 import voteRoute from './vote/vote.routes';
 import reportRoute from './report/report.routes';
 import statisticalReportRoute from './statisticalReport/statisticalReport.routes';
+import systemReportRoute from './systemReport/systemReport.routes';
 import docsRoute from './docs.routes';
 
 const router = express.Router();
@@ -29,6 +31,10 @@ const defaultRoutes = [
   {
     path: '/departments',
     route: departmentRoute
+  },
+  {
+    path: '/all-departments',
+    route: allDepartmentRoute
   },
   {
     path: '/ideas',
@@ -61,6 +67,10 @@ const defaultRoutes = [
   {
     path: '/statistical-reports',
     route: statisticalReportRoute
+  },
+  {
+    path: '/system-reports',
+    route: systemReportRoute
   }
 ];
 
