@@ -78,6 +78,24 @@ const getAcademicInfos = catchAsync(async (req, res) => {
   successResponse(res, httpStatus.OK, AppMessage.retrievedSuccessful, response);
 });
 
+const getAllAcademicInfos = catchAsync(async (req, res) => {
+  const filter = pick(req.query, ['name']);
+  const options = pick(req.query, ['sortBy', 'sortType', 'limit', 'page']);
+
+  const { academicInfos } = await academicInfoService.queryAcademicInfos(filter, options);
+
+  successResponse(res, httpStatus.OK, AppMessage.retrievedSuccessful, academicInfos);
+});
+
+const getAllSemesters = catchAsync(async (req, res) => {
+  const filter = pick(req.query, ['name']);
+  const options = pick(req.query, ['sortBy', 'sortType', 'limit', 'page']);
+
+  const { semesters } = await academicInfoService.querySemesters(filter, options);
+
+  successResponse(res, httpStatus.OK, AppMessage.retrievedSuccessful, semesters);
+});
+
 const getAcademicStatus = (startDate: Date, endDate: Date) => {
   const currentDate = new Date();
   if (currentDate < startDate) {
@@ -154,6 +172,8 @@ export default {
   createAcademicInfo,
   getAcademicInfos,
   getAcademicInfo,
+  getAllAcademicInfos,
+  getAllSemesters,
   updateAcademicInfo,
   deleteAcademicInfo,
   downloadIdeaZipData

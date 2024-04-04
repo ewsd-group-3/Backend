@@ -5,6 +5,6 @@ import departmentController from './department.controller';
 const router = express.Router();
 
 /* For All Departments Dropdown */
-router.route('/').get(auth('ADMIN', 'QA_MANAGER'), departmentController.getAllDepartments);
+router.route('/').get(departmentController.getAllDepartments);
 
 export default router;

@@ -98,6 +98,47 @@ const queryAcademicInfos = async <Key extends keyof AcademicInfo>(
   };
 };
 
+const querySemesters = async <Key extends keyof AcademicInfo>(
+  filter: object,
+  options: {
+    limit?: number;
+    page?: number;
+    sortBy?: string;
+    sortType?: 'asc' | 'desc';
+  }
+): Promise<{
+  page: number;
+  limit: number;
+  count: number;
+  totalPages: number;
+  semesters: Semester[];
+}> => {
+  const page = options.page ?? 1;
+  const limit = options.limit ?? 5;
+  const sortBy = options.sortBy;
+  const sortType = options.sortType ?? 'desc';
+
+  const count: number = await prisma.semester.count({ where: filter });
+
+  const semesters = await prisma.semester.findMany({
+    where: filter,
+    include: { academicInfo: true },
+    skip: (page - 1) * limit,
+    take: limit,
+    orderBy: sortBy ? { [sortBy]: sortType } : undefined
+  });
+
+  const totalPages: number = Math.ceil(count / limit);
+
+  return {
+    page,
+    limit,
+    count,
+    totalPages,
+    semesters
+  };
+};
+
 /**
  * Get academicInfo by id
  * @param {ObjectId} id
@@ -290,6 +331,7 @@ export default {
   createAcademicInfo,
   createSemester,
   queryAcademicInfos,
+  querySemesters,
   getAcademicInfoById,
   getAcademicInfoWithSemesterById,
   updateAcademicInfoById,

@@ -19,6 +19,10 @@ router
     academicInfoController.getAcademicInfos
   );
 
+router.route('/all-academicInfos').get(academicInfoController.getAllAcademicInfos);
+
+router.route('/all-semesters').get(academicInfoController.getAllSemesters);
+
 router
   .route('/:academicInfoId')
   .get(
