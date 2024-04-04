@@ -84,7 +84,7 @@ const getAllAcademicInfos = catchAsync(async (req, res) => {
 
   const { academicInfos } = await academicInfoService.queryAcademicInfos(filter, options);
 
-  successResponse(res, httpStatus.OK, AppMessage.retrievedSuccessful, academicInfos);
+  successResponse(res, httpStatus.OK, AppMessage.retrievedSuccessful, { academicInfos });
 });
 
 const getAllSemesters = catchAsync(async (req, res) => {
@@ -93,7 +93,7 @@ const getAllSemesters = catchAsync(async (req, res) => {
 
   const { semesters } = await academicInfoService.querySemesters(filter, options);
 
-  successResponse(res, httpStatus.OK, AppMessage.retrievedSuccessful, semesters);
+  successResponse(res, httpStatus.OK, AppMessage.retrievedSuccessful, { semesters });
 });
 
 const getAcademicStatus = (startDate: Date, endDate: Date) => {
