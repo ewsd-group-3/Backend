@@ -147,17 +147,15 @@ const querySemesters = async <Key extends keyof AcademicInfo>(
  * @returns {Promise<Pick<AcademicInfo, Key> | null>}
  */
 const getAcademicInfoById = async <Key extends keyof AcademicInfo>(
-  id: number,
-  keys: Key[] = ['id', 'name', 'createdAt', 'updatedAt'] as Key[]
+  id: number
 ): Promise<Pick<AcademicInfo, Key>> => {
-  const academicInfo = await prisma.academicInfo.findUnique({
-    where: { id },
-    select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {})
+  const academicInfo = await prisma.academicInfo.findFirst({
+    where: { id }
   });
   if (!academicInfo) {
     throw new ApiError(httpStatus.NOT_FOUND, 'AcademicInfo is not found');
   }
-  return academicInfo as Promise<Pick<AcademicInfo, Key>>;
+  return academicInfo;
 };
 
 /**
@@ -212,17 +210,21 @@ const getAcademicInfoByName = async <Key extends keyof AcademicInfo>(
  */
 const updateAcademicInfoById = async <Key extends keyof AcademicInfo>(
   academicInfoId: number,
-  updateBody: Prisma.AcademicInfoUpdateInput,
-  keys: Key[] = ['id', 'name', 'createdAt', 'updatedAt', 'semesters'] as Key[]
+  updateBody: Prisma.AcademicInfoUpdateInput
 ): Promise<Pick<AcademicInfo, Key> | null> => {
-  const academicInfo = await getAcademicInfoById(academicInfoId, ['id', 'name']);
-  // if (updateBody.name && (await getAcademicInfoByName(updateBody.name as string))) {
-  //   throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
-  // }
+  const academicInfo = await getAcademicInfoById(academicInfoId);
+
+  if (
+    updateBody.name &&
+    academicInfo.name !== updateBody.name &&
+    (await getAcademicInfoByName(updateBody.name as string))
+  ) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Academic Info name already exist');
+  }
+
   const updatedAcademicInfo = await prisma.academicInfo.update({
     where: { id: academicInfo.id },
-    data: updateBody,
-    select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {})
+    data: updateBody
   });
   return updatedAcademicInfo as Pick<AcademicInfo, Key> | null;
 };
@@ -247,7 +249,7 @@ const updateSemesterById = async <Key extends keyof Semester>(
     'updatedAt'
   ] as Key[]
 ): Promise<Pick<Semester, Key> | null> => {
-  const academicInfo = await getAcademicInfoById(semesterId, ['id', 'name']);
+  const academicInfo = await getAcademicInfoById(semesterId);
   // if (updateBody.name && (await getAcademicInfoByName(updateBody.name as string))) {
   //   throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
   // }

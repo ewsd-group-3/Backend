@@ -43,12 +43,7 @@ const deleteReport = {
 const rejectReport = {
   params: Joi.object().keys({
     reportId: Joi.number().integer()
-  }),
-  body: Joi.object()
-    .keys({
-      approvedBy: Joi.number()
-    })
-    .min(1)
+  })
 };
 
 export default {

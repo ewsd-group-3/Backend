@@ -41,16 +41,7 @@ const updateIdea = {
     .keys({
       title: Joi.string().required(),
       description: Joi.string().required(),
-      isAnonymous: Joi.boolean().required(),
-      categoryIds: Joi.array().items(Joi.number().integer()).required(),
-      documents: Joi.array().items(
-        Joi.object().keys({
-          name: Joi.string().required(),
-          documenttype: Joi.string().required(),
-          documentDownloadUrl: Joi.string().required(),
-          documentDeleteUrl: Joi.string().required()
-        })
-      )
+      isAnonymous: Joi.boolean().required()
     })
     .min(1)
 };

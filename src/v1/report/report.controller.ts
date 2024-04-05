@@ -10,7 +10,6 @@ import ideaService from '../idea/idea.service';
 
 const createReport = catchAsync(async (req, res) => {
   const staff = req.staff;
-
   const { ideaId, reason } = req.body;
   const report = await reportService.createReport(ideaId, staff.id, reason);
   successResponse(res, httpStatus.CREATED, AppMessage.reportCreated, { report });
@@ -19,9 +18,14 @@ const createReport = catchAsync(async (req, res) => {
 const getReports = catchAsync(async (req, res) => {
   const filter = pick(req.query, ['name']);
   const options = pick(req.query, ['sortBy', 'sortType', 'limit', 'page']);
-  const result = await reportService.queryReports(filter, options);
+  const result = (await reportService.queryReports(filter, options)) as any;
   successResponse(res, httpStatus.OK, AppMessage.retrievedSuccessful, {
-    ...result
+    ...result,
+    reports: result.reports?.map((report: any) => ({
+      ...report,
+      isStaffActive: report.idea.author.isActive,
+      isIdeaHidden: report.idea.isHidden
+    }))
   });
 });
 
@@ -41,9 +45,9 @@ const deleteReport = catchAsync(async (req, res) => {
 });
 
 const rejectReport = catchAsync(async (req, res) => {
-  const { approvedById } = req.body;
+  var staff = req.staff;
 
-  await reportService.rejectedReportById(req.params.reportId, approvedById);
+  await reportService.rejectedReportById(req.params.reportId, staff.id);
   successResponse(res, httpStatus.OK, AppMessage.reportRejected);
 });
 

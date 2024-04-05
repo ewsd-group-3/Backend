@@ -210,7 +210,7 @@ model PageView {
 model Report {
   id              Int           @id @default(autoincrement())
   reason          String
-  isApproved      Boolean       @default(false)
+  isRejected      Boolean       @default(false)
   approvedAt      DateTime?     
   idea            Idea          @relation(fields: [ideaId], references: [id])
   ideaId          Int  

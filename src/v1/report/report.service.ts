@@ -127,28 +127,6 @@ const deleteReportById = async (ReportId: number): Promise<Report> => {
   return report;
 };
 
-/**
- * Approved Report by id
- * @param {ObjectId} ReportId
- * @param {ObjectId} approvedById
- * @returns {Promise<Report>}
- */
-const approvedReportById = async <Key extends keyof Report>(
-  reportId: number,
-  approvedById: number
-): Promise<Pick<Report, Key>> => {
-  const report = await getReportById(reportId);
-  const updatedReport = await prisma.report.update({
-    where: { id: report.id },
-    data: {
-      isApproved: true,
-      approvedById,
-      approvedAt: new Date()
-    }
-  });
-  return updatedReport as Pick<Report, Key>;
-};
-
 // RejectReport
 
 /**
@@ -165,7 +143,7 @@ const rejectedReportById = async <Key extends keyof Report>(
   const updatedReport = await prisma.report.update({
     where: { id: report.id },
     data: {
-      isApproved: false,
+      isRejected: true,
       approvedById,
       approvedAt: new Date()
     }
@@ -179,6 +157,5 @@ export default {
   getReportById,
   updateReportById,
   deleteReportById,
-  rejectedReportById,
-  approvedReportById
+  rejectedReportById
 };
