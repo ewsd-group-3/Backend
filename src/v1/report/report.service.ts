@@ -52,7 +52,7 @@ const queryReports = async <Key extends keyof Report>(
     skip: (page - 1) * limit,
     take: limit,
     include: {
-      idea: true,
+      idea: { include: { author: true } },
       reportBy: true
     },
     orderBy: sortBy ? { [sortBy]: sortType } : undefined
