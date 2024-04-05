@@ -96,6 +96,18 @@ const getAllSemesters = catchAsync(async (req, res) => {
   successResponse(res, httpStatus.OK, AppMessage.retrievedSuccessful, { semesters });
 });
 
+const getCurrentAcademicInfo = catchAsync(async (req, res) => {
+  const academicInfo = await academicInfoService.getCurrentAcademicInfo();
+  successResponse(res, httpStatus.OK, AppMessage.retrievedSuccessful, {
+    academicInfo
+  });
+});
+
+const getCurrentSemester = catchAsync(async (req, res) => {
+  const semester = await academicInfoService.getCurrentSemester();
+  successResponse(res, httpStatus.OK, AppMessage.retrievedSuccessful, { semester });
+});
+
 const getAcademicStatus = (startDate: Date, endDate: Date) => {
   const currentDate = new Date();
   if (currentDate < startDate) {
@@ -172,6 +184,8 @@ export default {
   createAcademicInfo,
   getAcademicInfos,
   getAcademicInfo,
+  getCurrentSemester,
+  getCurrentAcademicInfo,
   getAllAcademicInfos,
   getAllSemesters,
   updateAcademicInfo,

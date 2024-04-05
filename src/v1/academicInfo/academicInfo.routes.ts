@@ -6,6 +6,9 @@ import academicInfoController from './academicInfo.controller';
 
 const router = express.Router();
 
+router.route('/currentSemester').get(academicInfoController.getCurrentSemester);
+router.route('/currentAcademicInfo').get(academicInfoController.getCurrentAcademicInfo);
+
 router
   .route('/')
   .post(

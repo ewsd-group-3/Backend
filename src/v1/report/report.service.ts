@@ -52,7 +52,12 @@ const queryReports = async <Key extends keyof Report>(
     skip: (page - 1) * limit,
     take: limit,
     include: {
-      idea: true,
+      idea: {
+        include: {
+          author: true,
+          semester: true
+        }
+      },
       reportBy: true
     },
     orderBy: sortBy ? { [sortBy]: sortType } : undefined
@@ -76,7 +81,18 @@ const queryReports = async <Key extends keyof Report>(
  * @returns {Promise<Pick<Report, Key>>}
  */
 const getReportById = async <Key extends keyof Report>(id: number): Promise<Pick<Report, Key>> => {
-  const report = prisma.report.findUnique({ where: { id } });
+  const report = prisma.report.findUnique({
+    where: { id },
+    include: {
+      idea: {
+        include: {
+          author: true,
+          semester: true
+        }
+      },
+      reportBy: true
+    }
+  });
   if (!report) throw new ApiError(httpStatus.NOT_FOUND, 'Report is not found');
   return report as Promise<Pick<Report, Key>>;
 };
