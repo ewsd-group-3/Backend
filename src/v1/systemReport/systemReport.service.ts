@@ -79,7 +79,15 @@ const getSystemReport = async (filter: {
 
   const ideasWithViews = await prisma.idea.findMany({
     where: { id: { in: ideaIds } },
-    include: { views: true, author: true }
+    include: {
+      views: true,
+      author: true,
+      ideaCategories: {
+        include: {
+          category: true
+        }
+      }
+    }
   });
 
   const mostViewedIdeas = ideasWithViews

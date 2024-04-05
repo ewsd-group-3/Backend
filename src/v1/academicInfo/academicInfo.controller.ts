@@ -158,11 +158,23 @@ const downloadIdeaZipData = catchAsync(async (req, res) => {
 
   archive.pipe(res);
 
-  // Get the Excel stream
-  const excelStream = await academicInfoService.createExcelStream(req.params.academicInfoId);
+  const academicInfo = await academicInfoService.getAcademicInfoById(
+    Number(req.params.academicInfoId)
+  );
 
-  // Append the Excel stream to the archive
+  // Get the Excel stream
+  const excelStream = await academicInfoService.createExcelStream(academicInfo);
   archive.append(excelStream, { name: 'ideas.xlsx' });
+
+  // Get Idea Documents
+  const data = await academicInfoService.getIdeaDocuments(academicInfo);
+  if (data) {
+    data.map((document: any) => {
+      archive.append(document.documentReadable, {
+        name: `/${document.directory}/` + document.fileName
+      });
+    });
+  }
 
   // Finalize the archive
   archive.finalize();
