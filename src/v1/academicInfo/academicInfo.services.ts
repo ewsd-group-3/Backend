@@ -360,6 +360,33 @@ const getCurrentAcademicInfo = async (): Promise<AcademicInfo> => {
   return academicInfo;
 };
 
+const getSemestersByAcademicInfoId = async (academicInfoId: number): Promise<Semester[]> => {
+  const semesters = await prisma.semester.findMany({
+    where: { academicInfoId: Number(academicInfoId) }
+  });
+
+  return semesters;
+};
+
+const updateSemesters = async (
+  semesters: Semester[],
+  updateSemesters: Prisma.SemesterUpdateInput[]
+) => {
+  let updatedSemesters = [];
+  for (const semester of semesters) {
+    const updateInput = updateSemesters.find((update) => update.name === semester.name);
+    if (updateInput) {
+      const updatedSemester = await prisma.semester.update({
+        where: { id: semester.id },
+        data: updateInput
+      });
+      updatedSemesters.push(updatedSemester);
+    }
+  }
+
+  return updatedSemesters;
+};
+
 export default {
   createAcademicInfo,
   createSemester,
@@ -373,5 +400,7 @@ export default {
   createExcelStream,
   getIdeaDocuments,
   getCurrentSemester,
-  getCurrentAcademicInfo
+  getCurrentAcademicInfo,
+  getSemestersByAcademicInfoId,
+  updateSemesters
 };

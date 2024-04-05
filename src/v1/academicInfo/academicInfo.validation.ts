@@ -38,15 +38,16 @@ const updateAcademicInfo = {
   }),
   body: Joi.object()
     .keys({
-      name: Joi.string().required(),
-      startDate: Joi.date().required(),
-      endDate: Joi.date().required(),
+      name: Joi.string(),
+      startDate: Joi.date(),
+      endDate: Joi.date(),
       semesters: Joi.array().items(
         Joi.object().keys({
-          name: Joi.string().required(),
-          startDate: Joi.date().required(),
-          closureDate: Joi.date().required(),
-          finalClosureDate: Joi.date().required()
+          id: Joi.number(),
+          name: Joi.string(),
+          startDate: Joi.date(),
+          closureDate: Joi.date(),
+          finalClosureDate: Joi.date()
         })
       )
     })
