@@ -140,15 +140,12 @@ const updateAcademicInfo = catchAsync(async (req, res) => {
     name: req.body.name
   });
 
-  const updateSemesters: any = pick(req.body, ['semesters']);
+  const { semesters } = req.body;
 
-  const semesters = await academicInfoService.getSemestersByAcademicInfoId(
-    req.params.academicInfoId
-  );
-
-  const updatedSemesters = await academicInfoService.updateSemesters(
-    semesters,
-    updateSemesters.semesters
+  const updatedSemesters = await Promise.all(
+    semesters.map(async (semester: Semester) => {
+      return await academicInfoService.updateSemesterById(semester.id, semester);
+    })
   );
 
   successResponse(res, httpStatus.OK, AppMessage.academicInfoUpdated, {
