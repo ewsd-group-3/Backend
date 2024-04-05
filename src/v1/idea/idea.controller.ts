@@ -65,6 +65,7 @@ const createIdea = catchAsync(async (req, res) => {
 });
 
 const getIdeas = catchAsync(async (req, res) => {
+  const currentAcademicInfo = await academicInfoService.getCurrentAcademicInfo();
   const currentSemester = await academicInfoService.getCurrentSemester();
 
   const currentStaff = req.staff ?? { id: 1 };
@@ -100,7 +101,9 @@ const getIdeas = catchAsync(async (req, res) => {
       ...idea,
       ...calculateCount(idea),
       likeStatus: getLikeStatus(idea, currentStaff.id)
-    }))
+    })),
+    currentAcademicInfo,
+    currentSemester
   };
 
   if (additionalSortBy && additionalSortBy == 'totalViewCount') {
