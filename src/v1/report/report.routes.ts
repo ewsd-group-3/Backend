@@ -8,7 +8,7 @@ const router = express.Router();
 
 router
   .route('/')
-  .post(validate(reportValidation.createReport), reportController.createReport)
+  .post(auth('STAFF'), validate(reportValidation.createReport), reportController.createReport)
   .get(auth('STAFF'), validate(reportValidation.getReports), reportController.getReports);
 
 router

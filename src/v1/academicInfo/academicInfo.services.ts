@@ -5,6 +5,7 @@ import ApiError from '../../utils/apiError';
 import { createExcelFile, formatWorkSheet, writeDataToSheet } from '../../utils/excel';
 import { Buffer } from 'buffer';
 import { Readable } from 'stream';
+import axios from 'axios';
 
 /**
  * Create a academicInfo
@@ -273,8 +274,7 @@ const deleteAcademicInfoById = async (academicInfoId: number): Promise<AcademicI
   return academicInfo;
 };
 
-const createExcelStream = async (academicInfoId: number) => {
-  const academicInfo = await getAcademicInfoById(Number(academicInfoId));
+const createExcelStream = async (academicInfo: AcademicInfo) => {
   const semesters = await prisma.semester.findMany({ where: { academicInfoId: academicInfo.id } });
   const excelFile = createExcelFile();
 
@@ -299,6 +299,34 @@ const createExcelStream = async (academicInfoId: number) => {
   const excelStream = Readable.from(excelBuffer);
 
   return excelStream;
+};
+
+const getIdeaDocuments = async (academicInfo: AcademicInfo) => {
+  const semesters = await prisma.semester.findMany({ where: { academicInfoId: academicInfo.id } });
+  const semesterIds = semesters.map((semester) => semester.id);
+
+  const ideas = await prisma.idea.findMany({
+    where: { semesterId: { in: semesterIds } },
+    include: { semester: true }
+  });
+  const ideaIds = ideas.map((idea) => idea.id);
+
+  const ideaDocuments = await prisma.ideaDocument.findMany({
+    where: { ideaId: { in: ideaIds } }
+  });
+
+  const ideaData = await Promise.all(
+    ideaDocuments.map(async (document) => {
+      const directory = await prisma.idea.findUnique({ where: { id: document.ideaId } });
+      const response = await axios.get(document.documentDownloadUrl, {
+        responseType: 'arraybuffer'
+      });
+      const documentReadable = Readable.from(response.data);
+      return { documentReadable, directory: `/${directory?.title}/`, fileName: document.name };
+    })
+  );
+
+  return ideaData.filter(Boolean);
 };
 
 const getCurrentSemester = async (): Promise<Semester> => {
@@ -341,6 +369,7 @@ export default {
   updateSemesterById,
   deleteAcademicInfoById,
   createExcelStream,
+  getIdeaDocuments,
   getCurrentSemester,
   getCurrentAcademicInfo
 };

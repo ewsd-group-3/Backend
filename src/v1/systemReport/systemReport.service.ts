@@ -16,12 +16,20 @@ const getSystemReport = async (filter: {
   topActiveUsers: Object;
   mostUsedBrowsers: Object;
   mostViewedIdeas: Object;
+  page: number;
+  limit: number;
+  count: number;
+  totalPages: number;
 }> => {
   const semesterId = filter?.semesterId;
   const startDate = filter?.startDate;
   const endDate = filter?.endDate;
   const page = filter?.page ?? 1;
   const limit = filter?.limit ?? 5;
+
+  const semester = await prisma.semester.findUnique({
+    where: { id: Number(semesterId) }
+  });
 
   const ideas = await prisma.idea.findMany({
     where: {
@@ -42,6 +50,21 @@ const getSystemReport = async (filter: {
     by: ['browserName'],
     _count: { browserName: true },
     orderBy: { _count: { browserName: 'desc' } },
+    where: {
+      ...(semesterId && {
+        createdAt: {
+          gte: semester?.startDate,
+          lte: semester?.finalClosureDate
+        }
+      }),
+      ...(startDate &&
+        endDate && {
+          createdAt: {
+            gte: startDate,
+            lte: endDate
+          }
+        })
+    },
     take: 3
   });
 
@@ -51,9 +74,20 @@ const getSystemReport = async (filter: {
     _count: undefined
   }));
 
+  const count = await prisma.idea.count({ where: { id: { in: ideaIds } } });
+  const totalPages: number = Math.ceil(count / limit);
+
   const ideasWithViews = await prisma.idea.findMany({
     where: { id: { in: ideaIds } },
-    include: { views: true, author: true }
+    include: {
+      views: true,
+      author: true,
+      ideaCategories: {
+        include: {
+          category: true
+        }
+      }
+    }
   });
 
   const mostViewedIdeas = ideasWithViews
@@ -68,7 +102,11 @@ const getSystemReport = async (filter: {
   return {
     topActiveUsers,
     mostUsedBrowsers,
-    mostViewedIdeas
+    mostViewedIdeas,
+    page,
+    limit,
+    count,
+    totalPages
   };
 };
 
