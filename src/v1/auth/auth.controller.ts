@@ -11,10 +11,15 @@ import successResponse from '../../utils/successResponse';
 
 const login = catchAsync(async (req, res) => {
   const { email, password, browserName } = req.body;
-  const staff = await authService.loginStaffWithEmailAndPassword(email, password, browserName);
+  const { staff, firstTimeLogin } = await authService.loginStaffWithEmailAndPassword(
+    email,
+    password,
+    browserName
+  );
   const tokens = await tokenService.generateAuthTokens(staff);
   successResponse(res, httpStatus.OK, AppMessage.loggedIn, {
     staff,
+    firstTimeLogin,
     tokens
   });
 });

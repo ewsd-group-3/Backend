@@ -20,7 +20,7 @@ const loginStaffWithEmailAndPassword = async (
   email: string,
   password: string,
   browserName: string
-): Promise<Omit<Staff, 'password'>> => {
+): Promise<{ staff: Omit<Staff, 'password'>; firstTimeLogin: boolean }> => {
   const staff = await staffService.getStaffByEmail(email, [
     'id',
     'email',
@@ -40,6 +40,8 @@ const loginStaffWithEmailAndPassword = async (
     throw new ApiError(httpStatus.FORBIDDEN, 'Account has been disabled!');
   }
 
+  const firstTimeLogin = await prisma.loginHistory.findFirst({ where: { staffId: staff.id } });
+
   // Create Login History
   await prisma.loginHistory.create({
     data: {
@@ -53,7 +55,10 @@ const loginStaffWithEmailAndPassword = async (
     include: { department: true },
     data: { lastLoginDate: new Date() }
   });
-  return exclude(updatedStaff, ['password']);
+
+  const data = exclude(updatedStaff, ['password']);
+
+  return { staff: data, firstTimeLogin: firstTimeLogin ? false : true };
 };
 
 /**
