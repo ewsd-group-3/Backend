@@ -187,24 +187,9 @@ const getIdea = catchAsync(async (req, res) => {
 });
 
 const updateIdea = catchAsync(async (req, res) => {
-  var { categoryIds, documents, title, description, isAnonymous } = req.body;
-
-  await ideaService.deleteIdeaCategoriesByIdeaId(req.params.ideaId);
-  await ideaService.deleteIdeaDocumentsByIdeaId(req.params.ideaId);
+  var { title, description, isAnonymous } = req.body;
 
   const idea = await ideaService.updateIdeaById(req.params.ideaId, title, description, isAnonymous);
-
-  await ideaService.addIdeaCategories(req.params.ideaId, categoryIds);
-
-  documents.forEach(async (document: IdeaDocument) => {
-    await ideaService.addIdeaDocument(
-      document.name,
-      document.documenttype,
-      document.documentDownloadUrl,
-      document.documentDeleteUrl,
-      req.params.ideaId
-    );
-  });
 
   successResponse(res, httpStatus.OK, AppMessage.ideaUpdated, { ...idea });
 });
