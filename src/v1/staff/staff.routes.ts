@@ -25,7 +25,9 @@ router
   .patch(auth('ADMIN'), validate(staffValidation.updateStaff), staffController.updateStaff);
 // .delete(auth('manageStaffs'), validate(staffValidation.deleteStaff), staffController.deleteStaff);
 
-router.route('/toggle-active/:staffId').patch(auth('ADMIN'), staffController.toggleActive);
+router
+  .route('/toggle-active/:staffId')
+  .patch(auth('ADMIN', 'QA_MANAGER'), staffController.toggleActive);
 
 router
   .route('/reset-password/:staffId')

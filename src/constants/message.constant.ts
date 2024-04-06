@@ -70,8 +70,8 @@ const AppMessage = {
   retrievedSuccessful: 'Retrieved successful',
 
   // Status
-  statusOn: 'Staff status is on!',
-  statusOff: 'Staff status is off!'
+  statusOn: 'Activated Successfully',
+  statusOff: 'Deactivated Successfully'
 };
 
 export default AppMessage;
