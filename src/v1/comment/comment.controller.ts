@@ -19,11 +19,11 @@ const createComment = catchAsync(async (req, res) => {
   const comment = await commentService.createComment(content, staff.id, ideaId, isAnonymous);
 
   // var qaCoordinator = await staffService.getQACoordinatorStaffByDepartmentId(staff.departmentId);
-  var commentBy = await staffService.getStaffById(staff.id);
+  var author = await commentService.getAuthorByIdeaId(ideaId);
 
-  if (commentBy?.email) {
+  if (author?.email) {
     await emailService.sendEmail(
-      commentBy?.email,
+      author?.email,
       'New Comment',
       'A new comment has been added to your idea'
     );
