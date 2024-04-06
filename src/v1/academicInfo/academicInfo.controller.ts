@@ -134,19 +134,24 @@ const getAcademicInfo = catchAsync(async (req, res) => {
 });
 
 const updateAcademicInfo = catchAsync(async (req, res) => {
-  const { semesters } = req.body;
-
   const academicInfo = await academicInfoService.updateAcademicInfoById(req.params.academicInfoId, {
     startDate: req.body.startDate,
     endDate: req.body.endDate,
     name: req.body.name
   });
 
-  semesters?.forEach(async (semester: Semester) => {
-    await academicInfoService.updateSemesterById(semester.id, semester);
-  });
+  const { semesters } = req.body;
 
-  successResponse(res, httpStatus.OK, AppMessage.academicInfoUpdated, { ...academicInfo });
+  const updatedSemesters = await Promise.all(
+    semesters.map(async (semester: Semester) => {
+      return await academicInfoService.updateSemesterById(semester.id, semester);
+    })
+  );
+
+  successResponse(res, httpStatus.OK, AppMessage.academicInfoUpdated, {
+    ...academicInfo,
+    semesters: updatedSemesters
+  });
 });
 
 const deleteAcademicInfo = catchAsync(async (req, res) => {

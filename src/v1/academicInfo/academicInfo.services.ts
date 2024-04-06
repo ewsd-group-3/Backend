@@ -360,6 +360,14 @@ const getCurrentAcademicInfo = async (): Promise<AcademicInfo> => {
   return academicInfo;
 };
 
+const getSemestersByAcademicInfoId = async (academicInfoId: number): Promise<Semester[]> => {
+  const semesters = await prisma.semester.findMany({
+    where: { academicInfoId: Number(academicInfoId) }
+  });
+
+  return semesters;
+};
+
 export default {
   createAcademicInfo,
   createSemester,
@@ -373,5 +381,6 @@ export default {
   createExcelStream,
   getIdeaDocuments,
   getCurrentSemester,
-  getCurrentAcademicInfo
+  getCurrentAcademicInfo,
+  getSemestersByAcademicInfoId
 };
