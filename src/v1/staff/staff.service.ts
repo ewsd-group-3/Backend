@@ -156,7 +156,7 @@ const getQACoordinatorStaffByDepartmentId = async <Key extends keyof Staff>(
  */
 const updateStaffById = async <Key extends keyof Staff>(
   staffId: number,
-  updateBody: Prisma.StaffUpdateInput
+  updateBody: Prisma.StaffUncheckedUpdateInput
   // keys: Key[] = ['id', 'email', 'name', 'role'] as Key[]
 ): Promise<Pick<Staff, Key>> => {
   const staff = await getStaffById(staffId);
@@ -174,30 +174,30 @@ const updateStaffById = async <Key extends keyof Staff>(
   const adminStaff = await getAdminStaff();
   const qaMgrStaff = await getQAManagerStaff();
 
-  if (
-    updateBody.role &&
-    ((updateBody.role === 'ADMIN' && adminStaff) ||
-      (updateBody.role === 'QA_MANAGER' && qaMgrStaff))
-  ) {
-    throw new ApiError(
-      httpStatus.BAD_REQUEST,
-      `Cannot update Role because the system have already active ${updateBody.role} in the System!`
-    );
-  }
-
-  if (updateBody.role && updateBody.role === 'QA_COORDINATOR') {
-    // let qa_coordinator = null;
-    const qa_coordinator = await findQACoordinatorStaff(staff.departmentId);
-    // if (updateBody.departmentId) {
-    //   qa_coordinator = await findQACoordinatorStaff(staff.departmentId);
-    // } else {
-    //   qa_coordinator = await findQACoordinatorStaff(updateBody.departmentId);
-    // }
-    if (qa_coordinator)
+  if (updateBody.role) {
+    if (
+      (updateBody.role === 'ADMIN' && adminStaff && staff.id !== adminStaff.id) ||
+      (updateBody.role === 'QA_MANAGER' && qaMgrStaff && staff.id !== qaMgrStaff.id)
+    ) {
       throw new ApiError(
         httpStatus.BAD_REQUEST,
         `Cannot update Role because the system have already active ${updateBody.role} in the System!`
       );
+    }
+
+    if (updateBody.role === 'QA_COORDINATOR') {
+      let qa_coordinator = null;
+      if (updateBody.departmentId && staff.departmentId !== updateBody.departmentId) {
+        qa_coordinator = await findQACoordinatorStaff(Number(updateBody.departmentId));
+      } else {
+        qa_coordinator = await findQACoordinatorStaff(staff.departmentId);
+      }
+      if (qa_coordinator && qa_coordinator.id !== staff.id)
+        throw new ApiError(
+          httpStatus.BAD_REQUEST,
+          `Cannot update Role because the system have already active ${updateBody.role} in the System!`
+        );
+    }
   }
 
   const updatedStaff = await prisma.staff.update({
