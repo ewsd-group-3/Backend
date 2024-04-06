@@ -186,7 +186,13 @@ const updateStaffById = async <Key extends keyof Staff>(
   }
 
   if (updateBody.role && updateBody.role === 'QA_COORDINATOR') {
+    // let qa_coordinator = null;
     const qa_coordinator = await findQACoordinatorStaff(staff.departmentId);
+    // if (updateBody.departmentId) {
+    //   qa_coordinator = await findQACoordinatorStaff(staff.departmentId);
+    // } else {
+    //   qa_coordinator = await findQACoordinatorStaff(updateBody.departmentId);
+    // }
     if (qa_coordinator)
       throw new ApiError(
         httpStatus.BAD_REQUEST,
@@ -220,8 +226,8 @@ const deleteStaffById = async (staffId: number): Promise<Staff> => {
 };
 
 const toggleActive = async <Key extends keyof Staff>(
-  staffId: number,
-  keys: Key[] = ['id', 'email', 'name', 'role'] as Key[]
+  staffId: number
+  // keys: Key[] = ['id', 'email', 'name', 'role'] as Key[]
 ): Promise<Pick<Staff, Key>> => {
   const staff = await getStaffById(Number(staffId));
 
@@ -249,7 +255,8 @@ const toggleActive = async <Key extends keyof Staff>(
   const updatedStaff = await prisma.staff.update({
     where: { id: staff.id },
     data: { isActive: !staff.isActive },
-    select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {})
+    include: { department: true }
+    // select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {})
   });
 
   return updatedStaff as Pick<Staff, Key>;
