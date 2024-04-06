@@ -8,12 +8,21 @@ import academicInfoService from './academicInfo.services';
 import catchAsync from '../../utils/catchAsync';
 import successResponse from '../../utils/successResponse';
 import pick from '../../utils/pick';
-import { Semester } from '@prisma/client';
+import { AcademicInfo, Semester } from '@prisma/client';
 
 import archiver from 'archiver';
+import ApiError from '../../utils/apiError';
 
 const createAcademicInfo = catchAsync(async (req, res) => {
   const { name, startDate, endDate, semesters } = req.body;
+
+  const academicInfoReq = {
+    startDate,
+    endDate
+  } as AcademicInfo;
+
+  checkValidAcademicDateAndSemestersDates(academicInfoReq, semesters);
+
   const academicInfo = await academicInfoService.createAcademicInfo(name, startDate, endDate);
 
   const semesterAry: Semester[] = [];
@@ -140,7 +149,13 @@ const updateAcademicInfo = catchAsync(async (req, res) => {
     name: req.body.name
   });
 
+  if (!academicInfo) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Academic Info not found');
+  }
+
   const { semesters } = req.body;
+
+  checkValidAcademicDateAndSemestersDates(academicInfo, semesters);
 
   const updatedSemesters = await Promise.all(
     semesters.map(async (semester: Semester) => {
@@ -153,6 +168,81 @@ const updateAcademicInfo = catchAsync(async (req, res) => {
     semesters: updatedSemesters
   });
 });
+
+const checkValidAcademicDateAndSemestersDates = (
+  academicInfo: AcademicInfo,
+  semesters: Semester[]
+) => {
+  if (semesters.length != 2) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'There must be two semesters in Academic Year');
+  }
+
+  // check valid academic info
+  if (!checkValidDateRange(academicInfo.startDate, academicInfo.endDate)) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Academic Info dates are not valid');
+  }
+
+  // check valid semester date
+  semesters?.forEach((semester: Semester) => {
+    if (!checkValidDateRange(semester.startDate, semester.closureDate, semester.finalClosureDate)) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Semester dates are not valid');
+    }
+    // check all semesters are in academic info
+    if (academicInfo.startDate > semester.startDate) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Semester dates are not valid');
+    }
+    if (academicInfo.endDate < semester.finalClosureDate) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Semester dates are not valid');
+    }
+  });
+
+  // check semester are not conflict
+  var firstSemester = semesters[0];
+  var secondSemester = semesters[1];
+  if (
+    !checkDateRangeOverlap(
+      firstSemester.startDate,
+      firstSemester.finalClosureDate,
+      secondSemester.startDate,
+      secondSemester.finalClosureDate
+    )
+  ) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Semester dates are not valid');
+  }
+
+  return true;
+};
+
+const checkDateRangeOverlap = (
+  startDate1: Date,
+  endDate1: Date,
+  startDate2: Date,
+  endDate2: Date
+) => {
+  if (startDate1 > endDate1 || startDate2 > endDate2) {
+    return false;
+  }
+
+  if (endDate1 >= startDate2 && startDate1 <= endDate2) {
+    return false;
+  }
+
+  return true; // does not overlap
+};
+
+const checkValidDateRange = (firstDate: Date, secondDate: Date, thirdDate?: Date | null) => {
+  if (firstDate > secondDate) {
+    return false;
+  }
+
+  if (thirdDate) {
+    if (secondDate > thirdDate) {
+      return false;
+    }
+  }
+
+  return true;
+};
 
 const deleteAcademicInfo = catchAsync(async (req, res) => {
   await academicInfoService.deleteAcademicInfoById(req.params.academicInfoId);

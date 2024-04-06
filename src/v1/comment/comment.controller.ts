@@ -10,6 +10,7 @@ import staffService from '../staff/staff.service';
 import catchAsync from '../../utils/catchAsync';
 import successResponse from '../../utils/successResponse';
 import pick from '../../utils/pick';
+import ideaService from '../idea/idea.service';
 
 const createComment = catchAsync(async (req, res) => {
   const staff = req.staff ?? { id: 1 };
@@ -18,14 +19,16 @@ const createComment = catchAsync(async (req, res) => {
 
   const comment = await commentService.createComment(content, staff.id, ideaId, isAnonymous);
 
+  const idea = await ideaService.getIdeaById(ideaId);
+
   // var qaCoordinator = await staffService.getQACoordinatorStaffByDepartmentId(staff.departmentId);
   var author = await commentService.getAuthorByIdeaId(ideaId);
 
   if (author?.email) {
     await emailService.sendEmail(
       author?.email,
-      'New Comment',
-      'A new comment has been added to your idea'
+      `New Comment`,
+      `Someone comments in your idea (${idea?.title})`
     );
   }
 
