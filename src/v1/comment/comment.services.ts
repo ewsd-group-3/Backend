@@ -2,7 +2,6 @@ import { Comment, Prisma } from '@prisma/client';
 import httpStatus from 'http-status';
 import prisma from '../../prisma';
 import ApiError from '../../utils/apiError';
-import { config } from 'dotenv';
 
 /**
  * Create a comment
@@ -148,10 +147,17 @@ const deleteCommentById = async (commentId: number): Promise<Comment> => {
   return comment;
 };
 
+const getAuthorByIdeaId = async (ideaId: number) => {
+  const idea = await prisma.idea.findUnique({ where: { id: Number(ideaId) } });
+  const staff = await prisma.staff.findUnique({ where: { id: idea?.authorId } });
+  return staff;
+};
+
 export default {
   createComment,
   queryComments,
   getCommentById,
   updateCommentById,
-  deleteCommentById
+  deleteCommentById,
+  getAuthorByIdeaId
 };
