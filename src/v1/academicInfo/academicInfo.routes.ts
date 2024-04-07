@@ -17,7 +17,7 @@ router
     academicInfoController.createAcademicInfo
   )
   .get(
-    auth('ADMIN', 'QA_MANAGER'),
+    auth('ADMIN', 'QA_MANAGER', 'QA_COORDINATOR'),
     validate(academicInfoValidation.getAcademicInfos),
     academicInfoController.getAcademicInfos
   );
