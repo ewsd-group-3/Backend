@@ -5,7 +5,7 @@ const createIdea = {
     title: Joi.string().required(),
     description: Joi.string().required(),
     isAnonymous: Joi.boolean().required(),
-    categoryIds: Joi.array().items(Joi.number().integer()).required(),
+    categoryIds: Joi.array().items(Joi.number().integer()).min(1).required(),
     documents: Joi.array().items(
       Joi.object().keys({
         name: Joi.string().required(),
