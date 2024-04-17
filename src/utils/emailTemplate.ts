@@ -138,9 +138,9 @@ const emailTemplate = (text: string) => {
                                           <img 
                                               align="center" 
                                               border="0" 
-                                              src="https://img.freepik.com/free-vector/colorful-letter-gradient-logo-design_474888-2309.jpg?w=826&t=st=1709914681~exp=1709915281~hmac=dec96d9d6ffc98a9a9df28b63b04019e92f8e05eae578c2f498ed64d2a1a28ce" 
-                                              alt="Dummy Logo" 
-                                              title="Dummy Logo" 
+                                              src="https://firebasestorage.googleapis.com/v0/b/ewsd-35bf8.appspot.com/o/wayne_uni_logo.jpg?alt=media&token=2fcfe3d3-d3e0-421d-a742-2f1f7c7962ee" 
+                                              alt="Wayne University Logo" 
+                                              title="Wayne University Logo" 
                                               style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: inline-block !important;border: none;height: auto;float: none;width: 19%;max-width: 106.4px;"
                                               width="106.4" />
                                         </a>
