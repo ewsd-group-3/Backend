@@ -277,9 +277,9 @@ const commentTemplate = async (data: commentEmail) => {
                                   <div>
                                     <div style="padding: 20px; background-color: #010101; max-height: 90px">
                                       <img
-                                        src="public/img/wayne_uni_logo.jpg"
-                                        alt="{{bizName}}"
-                                        style="height: 50px; object-fit: cover"
+                                        src="https://firebasestorage.googleapis.com/v0/b/ewsd-35bf8.appspot.com/o/wayne_uni_logo.jpg?alt=media&token=2fcfe3d3-d3e0-421d-a742-2f1f7c7962ee"
+                                        alt="Wayne University Logo"
+                                        style="height: 80px; object-fit: cover"
                                       />
                                     </div>
                                   </div>
