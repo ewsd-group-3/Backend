@@ -25,11 +25,10 @@ const createComment = catchAsync(async (req, res) => {
   var author = await commentService.getAuthorByIdeaId(ideaId);
 
   if (author?.email) {
-    await emailService.sendEmail(
-      author?.email,
-      `New Comment`,
-      `Someone comments in your idea (${idea?.title})`
-    );
+    await emailService.sendEmailComment(author?.email, `New Comment`, {
+      comment,
+      receiver: author
+    });
   }
 
   successResponse(res, httpStatus.CREATED, AppMessage.commentCreated, { comment });

@@ -1,6 +1,9 @@
 import nodemailer from 'nodemailer';
 import config from '../../config/config';
 import logger from '../../config/logger';
+import commentTemplate from '../../utils/comment/emailTemplate';
+import newIdeasTemplate from '../../utils/newIdeas/emailTemplate';
+import { commentEmail, newIdeaEmail } from '../../types/response';
 import emailTemplate from '../../utils/emailTemplate';
 
 const transport = nodemailer.createTransport(config.email.smtp);
@@ -23,6 +26,16 @@ if (config.env !== 'test') {
  * @param {string} text
  * @returns {Promise}
  */
+const sendEmailComment = async (to: string, subject: string, data: commentEmail) => {
+  const msg = { from: config.email.from, to, subject, html: await commentTemplate(data) };
+  await transport.sendMail(msg);
+};
+
+const sendEmailNewIdea = async (to: string, subject: string, data: newIdeaEmail) => {
+  const msg = { from: config.email.from, to, subject, html: await newIdeasTemplate(data) };
+  await transport.sendMail(msg);
+};
+
 const sendEmail = async (to: string, subject: string, text: string) => {
   const msg = { from: config.email.from, to, subject, html: emailTemplate(text) };
   await transport.sendMail(msg);
@@ -41,7 +54,7 @@ const sendResetPasswordEmail = async (to: string, token: string) => {
   const text = `Dear staff,
 To reset your password, click on this link: ${resetPasswordUrl}
 If you did not request any password resets, then ignore this email.`;
-  await sendEmail(to, subject, text);
+  // await sendEmailNewIdea(to, subject, text);
 };
 
 /**
@@ -56,11 +69,13 @@ const sendVerificationEmail = async (to: string, token: string) => {
   const verificationEmailUrl = `http://link-to-app/verify-email?token=${token}`;
   const text = `Dear staff,
 To verify your email, click on this link: ${verificationEmailUrl}`;
-  await sendEmail(to, subject, text);
+  // await sendEmailNewIdea(to, subject, text);
 };
 
 export default {
   transport,
+  sendEmailComment,
+  sendEmailNewIdea,
   sendEmail,
   sendResetPasswordEmail,
   sendVerificationEmail

@@ -1,4 +1,4 @@
-import { Category } from '@prisma/client';
+import { Category, Comment } from '@prisma/client';
 
 export interface TokenResponse {
   token: string;
@@ -34,4 +34,14 @@ export interface TopActiveUsers {
   votesCount: number;
   viewsCount: number;
   total: number;
+}
+
+export interface newIdeaEmail {
+  idea: Idea;
+  receiver: Staff;
+}
+
+export interface commentEmail {
+  comment: Comment;
+  receiver: Staff;
 }

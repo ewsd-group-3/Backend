@@ -43,7 +43,10 @@ const loginStaffWithEmailAndPassword = async (
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect password!');
   }
 
-  const firstTimeLogin = await prisma.loginHistory.findFirst({ where: { staffId: staff.id } });
+  const firstTimeLogin = await prisma.loginHistory.findFirst({
+    orderBy: { createdAt: 'desc' },
+    where: { staffId: staff.id }
+  });
 
   // Create Login History
   await prisma.loginHistory.create({
@@ -56,7 +59,7 @@ const loginStaffWithEmailAndPassword = async (
   const updatedStaff = await prisma.staff.update({
     where: { id: staff.id },
     include: { department: true },
-    data: { lastLoginDate: new Date() }
+    data: { lastLoginDate: firstTimeLogin ? firstTimeLogin?.createdAt : null }
   });
 
   const data = exclude(updatedStaff, ['password']);

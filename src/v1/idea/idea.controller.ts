@@ -54,11 +54,10 @@ const createIdea = catchAsync(async (req, res) => {
   var qaCoordinator = await staffService.getQACoordinatorStaffByDepartmentId(author.departmentId);
 
   if (qaCoordinator?.email) {
-    await emailService.sendEmail(
-      qaCoordinator?.email,
-      'New Idea',
-      `New idea is submitted from your department. (Idea Title - ${idea?.title} | Idea Description - ${idea?.description})`
-    );
+    await emailService.sendEmailNewIdea(qaCoordinator?.email, 'New Idea', {
+      idea,
+      receiver: qaCoordinator
+    });
   }
 
   successResponse(res, httpStatus.CREATED, AppMessage.ideaCreated, {
