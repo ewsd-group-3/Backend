@@ -15,7 +15,7 @@ const createIdea = async (
   semesterId: number,
   isAnonymous: boolean
 ): Promise<Idea> => {
-  console.log('desc before create: ', description);
+  // console.log('desc before create: ', description);
 
   return prisma.idea.create({ data: { title, description, authorId, semesterId, isAnonymous } });
 };
