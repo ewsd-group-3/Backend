@@ -257,7 +257,7 @@ const downloadIdeaZipData = catchAsync(async (req, res) => {
 
   // Create a zip archive
   const archive = archiver('zip', {
-    zlib: { level: 9 } // Compression level
+    zlib: { level: 9 }
   });
 
   // Handle archive errors
