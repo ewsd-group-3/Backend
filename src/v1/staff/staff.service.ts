@@ -139,13 +139,13 @@ const getStaffByEmail = async <Key extends keyof Staff>(
  * @returns {Promise<Pick<Staff, Key> | null>}
  */
 const getQACoordinatorStaffByDepartmentId = async <Key extends keyof Staff>(
-  departmentId: number,
-  keys: Key[] = ['id', 'email', 'name', 'password', 'role', 'createdAt', 'updatedAt'] as Key[]
+  departmentId: number
 ): Promise<Pick<Staff, Key> | null> => {
-  return (await prisma.staff.findFirst({
+  return await prisma.staff.findFirst({
     where: { departmentId, role: 'QA_COORDINATOR' },
-    select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {})
-  })) as Promise<Pick<Staff, Key> | null>;
+    include: { department: true }
+    // select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {})
+  });
 };
 
 /**
