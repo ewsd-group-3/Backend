@@ -73,7 +73,7 @@ const getIdeas = catchAsync(async (req, res) => {
 
   const currentStaff = req.staff ?? { id: 1 };
 
-  const filter = pick(req.query, ['title']);
+  const filter = pick(req.query, ['title', 'categoryId']);
 
   filter['semesterId'] = currentSemester.id;
   filter['isHidden'] = false;

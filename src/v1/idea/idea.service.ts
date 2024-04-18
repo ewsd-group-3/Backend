@@ -2,6 +2,8 @@ import { Idea, IdeaCategory, IdeaDocument, Prisma, View } from '@prisma/client';
 import httpStatus from 'http-status';
 import prisma from '../../prisma';
 import ApiError from '../../utils/apiError';
+import exclude from '../../utils/exclude';
+import pick from '../../utils/pick';
 
 /**
  * Create a Idea
@@ -67,7 +69,7 @@ const addIdeaDocument = async (
  * @returns {Promise<QueryResult>}
  */
 const queryIdeas = async <Key extends keyof Idea>(
-  filter: object,
+  filter: any,
   options: {
     limit?: number;
     page?: number;
@@ -87,12 +89,19 @@ const queryIdeas = async <Key extends keyof Idea>(
   const sortBy = options.sortBy;
   const sortType = options.sortType ?? 'desc';
 
-  const count: number = await prisma.idea.count({ where: filter });
+  const ideaCategories = await prisma.ideaCategory.findMany({
+    where: filter.categoryId !== 0 ? { categoryId: Number(filter.categoryId) } : {}
+  });
+
+  const ideaFilter = exclude(filter, ['categoryId']);
+
+  const count: number = await prisma.idea.count({ where: ideaFilter });
   const totalPages: number = Math.ceil(count / limit);
 
+  const ideaIds = ideaCategories.map((ideaCategory) => ideaCategory.ideaId);
+
   const ideas = await prisma.idea.findMany({
-    where: filter,
-    // select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {}),
+    where: { ...ideaFilter, ...{ id: { in: ideaIds } } },
     include: {
       ideaCategories: {
         include: {
