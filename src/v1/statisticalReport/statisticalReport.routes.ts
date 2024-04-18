@@ -17,7 +17,7 @@ router
 router
   .route('/departments')
   .get(
-    auth('QA_MANAGER'),
+    auth('QA_MANAGER', 'QA_COORDINATOR'),
     validate(statisticalReportValidation.getDepartmentReport),
     statisticalReportController.getDepartmentReport
   );
