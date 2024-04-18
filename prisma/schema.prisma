@@ -121,7 +121,7 @@ model Vote {
 
 model Comment {
   id          Int         @id @default(autoincrement())
-  content     String
+  content     String      @db.LongText
   isAnonymous Boolean     @default(false)
   staff       Staff       @relation(fields: [staffId], references: [id])
   staffId     Int
@@ -195,6 +195,14 @@ model LoginHistory {
   browserName     String
   staff           Staff         @relation(fields: [staffId], references: [id])
   staffId         Int
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @default(now()) @updatedAt
+}
+
+model PageView {
+  id              Int           @id @default(autoincrement())
+  url             String
+  count           Int
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @default(now()) @updatedAt
 }
