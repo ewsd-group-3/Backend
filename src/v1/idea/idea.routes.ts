@@ -17,23 +17,21 @@ router
   .patch(auth('STAFF'), validate(ideaValidation.updateIdea), ideaController.updateIdea)
   .delete(auth('STAFF'), validate(ideaValidation.deleteIdea), ideaController.deleteIdea);
 
-router.route('/:ideaId/hide').patch(
-  // auth('STAFF'),
-  validate(ideaValidation.hideIdea),
-  ideaController.hideIdea
-);
+router
+  .route('/:ideaId/hide')
+  .patch(auth('QA_MANAGER'), validate(ideaValidation.hideIdea), ideaController.hideIdea);
 
-router.route('/hideByReportId/:reportId').patch(
-  // auth('QA_COORDINATOR'),
-  validate(ideaValidation.hideIdeaByReportId),
-  ideaController.hideIdeaByReportId
-);
+router
+  .route('/hideByReportId/:reportId')
+  .patch(
+    auth('QA_MANAGER'),
+    validate(ideaValidation.hideIdeaByReportId),
+    ideaController.hideIdeaByReportId
+  );
 
-router.route('/:ideaId/unhide').patch(
-  // auth('STAFF'),
-  validate(ideaValidation.hideIdea),
-  ideaController.unhideIdea
-);
+router
+  .route('/:ideaId/unhide')
+  .patch(auth('QA_MANAGER'), validate(ideaValidation.hideIdea), ideaController.unhideIdea);
 
 router.route('/unhideByReportId/:reportId').patch(
   // auth('QA_COORDINATOR'),
