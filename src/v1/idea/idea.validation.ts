@@ -23,7 +23,8 @@ const getIdeas = {
     sortBy: Joi.string(),
     sortType: Joi.string(),
     limit: Joi.number().integer(),
-    page: Joi.number().integer()
+    page: Joi.number().integer(),
+    categoryId: Joi.number().integer()
   })
 };
 
