@@ -319,7 +319,7 @@ const emailTemplate = async (data: newIdeaEmail) => {
                                             </tr>
                                             <tr>
                                               <td style="font-size: 14px; color: #787878; padding: 8px 0">Department</td>
-                                              <td style="font-size: 14px; padding: 8px 0">${data.idea?.description}</td>
+                                              <td style="font-size: 14px; padding: 8px 0">${data.receiver.department.name}</td>
                                             </tr>
                                             <tr>
                                               <td style="font-size: 14px; color: #787878; padding: 8px 0">Created by</td>
