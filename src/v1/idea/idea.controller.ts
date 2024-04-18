@@ -112,41 +112,41 @@ const getIdeas = catchAsync(async (req, res) => {
   if (additionalSortBy && additionalSortBy == 'totalViewCount') {
     response.ideas = response.ideas.sort((a, b) => {
       if (options.sortType == 'desc') {
-        return b.totalViewCount.localeCompare(a.totalViewCount);
+        return b.totalViewCount - a.totalViewCount;
       } else {
-        return a.totalViewCount.localeCompare(b.totalViewCount);
+        return a.totalViewCount - b.totalViewCount;
       }
     });
   } else if (additionalSortBy && additionalSortBy == 'voteResult') {
     response.ideas = response.ideas.sort((a, b) => {
       if (options.sortType == 'desc') {
-        return b.voteResult.localeCompare(a.voteResult);
+        return b.voteResult - a.voteResult;
       } else {
-        return a.voteResult.localeCompare(b.voteResult);
+        return a.voteResult - b.voteResult;
       }
     });
   } else if (additionalSortBy && additionalSortBy == 'totalComments') {
     response.ideas = response.ideas.sort((a, b) => {
       if (options.sortType == 'desc') {
-        return b.totalComments.localeCompare(a.totalComments);
+        return b.totalComments - a.totalComments;
       } else {
-        return a.totalComments.localeCompare(b.totalComments);
+        return a.totalComments - b.totalComments;
       }
     });
   } else if (additionalSortBy && additionalSortBy == 'totalLikes') {
     response.ideas = response.ideas.sort((a, b) => {
       if (options.sortType == 'desc') {
-        return b.totalLikes.localeCompare(a.totalLikes);
+        return b.totalLikes - a.totalLikes;
       } else {
-        return a.totalLikes.localeCompare(b.totalLikes);
+        return a.totalLikes - b.totalLikes;
       }
     });
   } else if (additionalSortBy && additionalSortBy == 'totalDisLikes') {
     response.ideas = response.ideas.sort((a, b) => {
       if (options.sortType == 'desc') {
-        return b.totalDisLikes.localeCompare(a.totalDisLikes);
+        return b.totalDisLikes - a.totalDisLikes;
       } else {
-        return a.totalDisLikes.localeCompare(b.totalDisLikes);
+        return a.totalDisLikes - b.totalDisLikes;
       }
     });
   }
