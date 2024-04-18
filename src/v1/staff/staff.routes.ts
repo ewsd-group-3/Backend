@@ -9,7 +9,11 @@ const router = express.Router();
 router
   .route('/')
   .post(auth('ADMIN'), validate(staffValidation.createStaff), staffController.createStaff)
-  .get(auth('ADMIN'), validate(staffValidation.getStaffs), staffController.getStaffs);
+  .get(
+    auth('ADMIN', 'QA_COORDINATOR'),
+    validate(staffValidation.getStaffs),
+    staffController.getStaffs
+  );
 
 router
   .route('/upload-profile')
