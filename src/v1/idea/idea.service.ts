@@ -99,6 +99,7 @@ const queryIdeas = async <Key extends keyof Idea>(
           category: true
         }
       },
+      ideaDocuments: true,
       author: true,
       votes: true,
       comments: true,
