@@ -1,4 +1,4 @@
-export const defaultPassword = '123456';
+export const defaultPassword = 'P@ssword1!!';
 
 const AppMessage = {
   // Staff

@@ -6,7 +6,6 @@ import AppMessage from '../../constants/message.constant';
 import catchAsync from '../../utils/catchAsync';
 import successResponse from '../../utils/successResponse';
 import pick from '../../utils/pick';
-import ideaService from '../idea/idea.service';
 
 const createReport = catchAsync(async (req, res) => {
   const staff = req.staff;
