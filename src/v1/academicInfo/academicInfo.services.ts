@@ -149,7 +149,6 @@ const querySemesters = async <Key extends keyof AcademicInfo>(
 const getAcademicInfoById = async <Key extends keyof AcademicInfo>(
   id: number
 ): Promise<Pick<AcademicInfo, Key>> => {
-  console.log(id);
   const academicInfo = await prisma.academicInfo.findFirst({
     where: { id }
   });
