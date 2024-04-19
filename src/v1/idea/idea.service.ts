@@ -1,4 +1,4 @@
-import { Idea, IdeaCategory, IdeaDocument, Prisma, View } from '@prisma/client';
+import { Idea, IdeaCategory, IdeaDocument, Prisma, View, Vote } from '@prisma/client';
 import httpStatus from 'http-status';
 import prisma from '../../prisma';
 import ApiError from '../../utils/apiError';
@@ -76,7 +76,6 @@ const queryIdeas = async <Key extends keyof Idea>(
     sortBy?: string;
     sortType?: 'asc' | 'desc';
   }
-  // keys: Key[] = ['id', 'name', 'createdAt', 'updatedAt'] as Key[]
 ): Promise<{
   page: number;
   limit: number;
@@ -100,7 +99,7 @@ const queryIdeas = async <Key extends keyof Idea>(
 
   const ideaIds = ideaCategories.map((ideaCategory) => ideaCategory.ideaId);
 
-  const ideas = await prisma.idea.findMany({
+  const allIdeas = await prisma.idea.findMany({
     where: { ...ideaFilter, ...{ id: { in: ideaIds } } },
     include: {
       ideaCategories: {
@@ -114,12 +113,71 @@ const queryIdeas = async <Key extends keyof Idea>(
       comments: true,
       views: true
     },
-    skip: (page - 1) * limit,
-    take: limit,
-    orderBy: sortBy ? { [sortBy]: sortType } : undefined
+    orderBy: sortBy === 'createdAt' ? { [sortBy]: sortType } : undefined
   });
 
+  let ideas = allIdeas
+    .map((idea) => ({
+      ...idea,
+      ...calculateCount(idea)
+    }))
+    .filter(Boolean);
+
+  if (sortBy === 'totalViewCount') {
+    ideas = ideas.sort((a, b) => {
+      if (sortType == 'desc') {
+        return b.totalViewCount - a.totalViewCount;
+      } else {
+        return a.totalViewCount - b.totalViewCount;
+      }
+    });
+  } else if (sortBy === 'voteResult') {
+    ideas = ideas.sort((a, b) => {
+      if (sortType == 'desc') {
+        return b.voteResult - a.voteResult;
+      } else {
+        return a.voteResult - b.voteResult;
+      }
+    });
+  } else if (sortBy === 'totalComments') {
+    ideas = ideas.sort((a, b) => {
+      if (sortType == 'desc') {
+        return b.totalComments - a.totalComments;
+      } else {
+        return a.totalComments - b.totalComments;
+      }
+    });
+  } else if (sortBy === 'totalLikes') {
+    ideas = ideas.sort((a, b) => {
+      if (sortType == 'desc') {
+        return b.totalLikes - a.totalLikes;
+      } else {
+        return a.totalLikes - b.totalLikes;
+      }
+    });
+  } else if (sortBy === 'totalDisLikes') {
+    ideas = ideas.sort((a, b) => {
+      if (sortType == 'desc') {
+        return b.totalDisLikes - a.totalDisLikes;
+      } else {
+        return a.totalDisLikes - b.totalDisLikes;
+      }
+    });
+  }
+
+  ideas = ideas.slice((page - 1) * limit, page * limit);
+
   return { page, limit, count, totalPages, ideas: ideas as Pick<Idea, Key>[] };
+};
+
+const calculateCount = (idea: any) => {
+  return {
+    totalLikes: idea.votes?.filter((x: Vote) => x.isThumbUp).length,
+    totalDisLikes: idea.votes?.filter((x: Vote) => !x.isThumbUp).length,
+    voteResult: idea.votes?.reduce((acc: number, v: Vote) => acc + (v.isThumbUp ? 1 : -1), 0),
+    totalComments: idea.comments.length,
+    totalViewCount: idea.views.length
+  };
 };
 
 /**
@@ -143,7 +201,7 @@ const getIdeaById = async <Key extends keyof Idea>(id: number): Promise<Pick<Ide
  * @param {Array<Key>} keys
  * @returns {Promise<Pick<Idea, Key>>}
  */
-const getIdeaDetailById = async <Key extends keyof Idea>(id: number): Promise<Pick<Idea, Key>> => {
+const getIdeaDetailById = async (id: number) => {
   const idea = prisma.idea.findUnique({
     where: { id },
     include: {
@@ -178,7 +236,7 @@ const getIdeaDetailById = async <Key extends keyof Idea>(id: number): Promise<Pi
   // To Update View Count - Require StaffId
   // await updateViewCount(staffId, 1);
 
-  return idea as Promise<Pick<Idea, Key>>;
+  return idea;
 };
 
 /**
@@ -261,6 +319,7 @@ const deleteIdeaCategoriesByIdeaId = async (IdeaId: number): Promise<Idea> => {
 
   return idea;
 };
+
 /**
  * Delete Idea Document by idea id
  * @param {ObjectId} IdeaId

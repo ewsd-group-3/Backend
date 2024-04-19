@@ -80,78 +80,20 @@ const getIdeas = catchAsync(async (req, res) => {
 
   const options = pick(req.query, ['sortBy', 'sortType', 'limit', 'page']);
 
-  const additionalAttributes: any[] = [
-    'totalViewCount',
-    'voteResult',
-    'totalComments',
-    'totalLikes',
-    'totalDisLikes'
-  ];
-  let additionalSortBy = null;
-
-  if (options.sortBy && additionalAttributes.includes(options.sortBy)) {
-    additionalSortBy = options.sortBy;
-    options.sortBy = null;
-  }
-
   const { page, limit, count, totalPages, ideas } = await ideaService.queryIdeas(filter, options);
-  let response = {
+
+  successResponse(res, httpStatus.OK, AppMessage.retrievedSuccessful, {
     page,
     limit,
     count,
     totalPages,
     ideas: ideas.map((idea) => ({
       ...idea,
-      ...calculateCount(idea),
       likeStatus: getLikeStatus(idea, currentStaff.id)
     })),
     currentAcademicInfo,
     currentSemester
-  };
-
-  if (additionalSortBy && additionalSortBy == 'totalViewCount') {
-    response.ideas = response.ideas.sort((a, b) => {
-      if (options.sortType == 'desc') {
-        return b.totalViewCount - a.totalViewCount;
-      } else {
-        return a.totalViewCount - b.totalViewCount;
-      }
-    });
-  } else if (additionalSortBy && additionalSortBy == 'voteResult') {
-    response.ideas = response.ideas.sort((a, b) => {
-      if (options.sortType == 'desc') {
-        return b.voteResult - a.voteResult;
-      } else {
-        return a.voteResult - b.voteResult;
-      }
-    });
-  } else if (additionalSortBy && additionalSortBy == 'totalComments') {
-    response.ideas = response.ideas.sort((a, b) => {
-      if (options.sortType == 'desc') {
-        return b.totalComments - a.totalComments;
-      } else {
-        return a.totalComments - b.totalComments;
-      }
-    });
-  } else if (additionalSortBy && additionalSortBy == 'totalLikes') {
-    response.ideas = response.ideas.sort((a, b) => {
-      if (options.sortType == 'desc') {
-        return b.totalLikes - a.totalLikes;
-      } else {
-        return a.totalLikes - b.totalLikes;
-      }
-    });
-  } else if (additionalSortBy && additionalSortBy == 'totalDisLikes') {
-    response.ideas = response.ideas.sort((a, b) => {
-      if (options.sortType == 'desc') {
-        return b.totalDisLikes - a.totalDisLikes;
-      } else {
-        return a.totalDisLikes - b.totalDisLikes;
-      }
-    });
-  }
-
-  successResponse(res, httpStatus.OK, AppMessage.retrievedSuccessful, response);
+  });
 });
 
 const calculateCount = (idea: any) => {
