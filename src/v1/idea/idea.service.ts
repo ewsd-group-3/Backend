@@ -425,18 +425,21 @@ const hideIdeaById = async (ideaId: number) => {
   return updatedIdeas;
 };
 
-const unhideIdeaById = async <Key extends keyof Idea>(ideaId: number): Promise<Pick<Idea, Key>> => {
+const unhideIdeaById = async (ideaId: number) => {
   const idea = await getIdeaById(ideaId);
 
   if (!idea) throw new ApiError(httpStatus.NOT_FOUND, 'Idea is not found');
 
-  const updatedIdea = await prisma.idea.update({
-    where: { id: idea.id },
+  const ideas = await prisma.idea.findMany({ where: { authorId: idea.authorId } });
+  const ideaIds = ideas.map((idea) => idea.id);
+
+  const updatedIdeas = await prisma.idea.updateMany({
+    where: { id: { in: ideaIds } },
     data: {
       isHidden: false
     }
   });
-  return updatedIdea as Pick<Idea, Key>;
+  return updatedIdeas;
 };
 
 const incrementViewCount = async (ideaId: number, staffId: number): Promise<boolean> => {
