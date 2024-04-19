@@ -91,13 +91,14 @@ const queryIdeas = async <Key extends keyof Idea>(
   const ideaCategories = await prisma.ideaCategory.findMany({
     where: filter.categoryId !== 0 ? { categoryId: Number(filter.categoryId) } : {}
   });
+  const ideaIds = ideaCategories.map((ideaCategory) => ideaCategory.ideaId);
 
   const ideaFilter = exclude(filter, ['categoryId']);
 
-  const count: number = await prisma.idea.count({ where: ideaFilter });
+  const count: number = await prisma.idea.count({
+    where: { ...ideaFilter, ...{ id: { in: ideaIds } } }
+  });
   const totalPages: number = Math.ceil(count / limit);
-
-  const ideaIds = ideaCategories.map((ideaCategory) => ideaCategory.ideaId);
 
   const allIdeas = await prisma.idea.findMany({
     where: { ...ideaFilter, ...{ id: { in: ideaIds } } },
