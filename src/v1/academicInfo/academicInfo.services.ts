@@ -249,12 +249,11 @@ const updateSemesterById = async <Key extends keyof Semester>(
     'updatedAt'
   ] as Key[]
 ): Promise<Pick<Semester, Key> | null> => {
-  const academicInfo = await getAcademicInfoById(semesterId);
   // if (updateBody.name && (await getAcademicInfoByName(updateBody.name as string))) {
   //   throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
   // }
   const updatedSemester = await prisma.semester.update({
-    where: { id: academicInfo.id },
+    where: { id: semesterId },
     data: updateBody,
     select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {})
   });
