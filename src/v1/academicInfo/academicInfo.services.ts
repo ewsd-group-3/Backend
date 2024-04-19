@@ -149,6 +149,7 @@ const querySemesters = async <Key extends keyof AcademicInfo>(
 const getAcademicInfoById = async <Key extends keyof AcademicInfo>(
   id: number
 ): Promise<Pick<AcademicInfo, Key>> => {
+  console.log(id);
   const academicInfo = await prisma.academicInfo.findFirst({
     where: { id }
   });
@@ -212,6 +213,7 @@ const updateAcademicInfoById = async <Key extends keyof AcademicInfo>(
   academicInfoId: number,
   updateBody: Prisma.AcademicInfoUpdateInput
 ): Promise<Pick<AcademicInfo, Key> | null> => {
+  console.log(academicInfoId);
   const academicInfo = await getAcademicInfoById(academicInfoId);
 
   if (
@@ -249,12 +251,11 @@ const updateSemesterById = async <Key extends keyof Semester>(
     'updatedAt'
   ] as Key[]
 ): Promise<Pick<Semester, Key> | null> => {
-  const academicInfo = await getAcademicInfoById(semesterId);
   // if (updateBody.name && (await getAcademicInfoByName(updateBody.name as string))) {
   //   throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
   // }
   const updatedSemester = await prisma.semester.update({
-    where: { id: academicInfo.id },
+    where: { id: semesterId },
     data: updateBody,
     select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {})
   });

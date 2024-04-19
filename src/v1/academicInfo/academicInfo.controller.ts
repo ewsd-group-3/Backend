@@ -143,11 +143,14 @@ const getAcademicInfo = catchAsync(async (req, res) => {
 });
 
 const updateAcademicInfo = catchAsync(async (req, res) => {
-  const academicInfo = await academicInfoService.updateAcademicInfoById(req.params.academicInfoId, {
-    startDate: req.body.startDate,
-    endDate: req.body.endDate,
-    name: req.body.name
-  });
+  const academicInfo = await academicInfoService.updateAcademicInfoById(
+    Number(req.params.academicInfoId),
+    {
+      startDate: req.body.startDate,
+      endDate: req.body.endDate,
+      name: req.body.name
+    }
+  );
 
   if (!academicInfo) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Academic Info not found');
