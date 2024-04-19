@@ -212,7 +212,6 @@ const updateAcademicInfoById = async <Key extends keyof AcademicInfo>(
   academicInfoId: number,
   updateBody: Prisma.AcademicInfoUpdateInput
 ): Promise<Pick<AcademicInfo, Key> | null> => {
-  console.log(academicInfoId);
   const academicInfo = await getAcademicInfoById(academicInfoId);
 
   if (
