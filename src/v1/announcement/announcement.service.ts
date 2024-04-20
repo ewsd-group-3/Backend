@@ -78,7 +78,8 @@ const queryAnnouncements = async <Key extends keyof Announcement>(
     page?: number;
     sortBy?: string;
     sortType?: 'asc' | 'desc';
-  }
+  },
+  staff: AuthStaff
 ): Promise<{
   page: number;
   limit: number;
@@ -91,11 +92,13 @@ const queryAnnouncements = async <Key extends keyof Announcement>(
   const sortBy = options.sortBy;
   const sortType = options.sortType ?? 'desc';
 
-  const count: number = await prisma.announcement.count({ where: filter });
+  const count: number = await prisma.announcement.count({
+    where: { ...filter, ...{ announcerId: staff.id } }
+  });
   const totalPages: number = Math.ceil(count / limit);
 
   const announcements = await prisma.announcement.findMany({
-    where: filter,
+    where: { ...filter, ...{ announcerId: staff.id } },
     include: {
       audiences: {
         select: {

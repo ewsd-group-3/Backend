@@ -22,10 +22,11 @@ const createAnnouncement = catchAsync(async (req, res) => {
 });
 
 const getAnnouncements = catchAsync(async (req, res) => {
+  const staff = req.staff;
   const filter = pick(req.query, ['name', 'role']);
   const options = pick(req.query, ['sortBy', 'sortType', 'limit', 'page']);
   const { page, limit, count, totalPages, announcements } =
-    await announcementService.queryAnnouncements(filter, options);
+    await announcementService.queryAnnouncements(filter, options, staff);
   successResponse(res, httpStatus.OK, AppMessage.retrievedSuccessful, {
     page,
     count,
