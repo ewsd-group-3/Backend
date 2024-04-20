@@ -142,7 +142,7 @@ const getQACoordinatorStaffByDepartmentId = async <Key extends keyof Staff>(
   departmentId: number
 ): Promise<Pick<Staff, Key> | null> => {
   return await prisma.staff.findFirst({
-    where: { departmentId, role: 'QA_COORDINATOR' },
+    where: { departmentId, isActive: true, role: 'QA_COORDINATOR' },
     include: { department: true }
     // select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {})
   });
